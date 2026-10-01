@@ -1,0 +1,55 @@
+---
+/** Section opener styled like a slate: timecode, kicker, title. */
+interface Props {
+  id: string;
+  tc: string;
+  kicker: string;
+  title: string;
+  as?: 'h2' | 'h1';
+}
+const { id, tc, kicker, title, as: Tag = 'h2' } = Astro.props;
+---
+
+<header class="shead">
+  <p class="shead__slate label" data-reveal>
+    <span class="shead__tc">{tc}</span>
+    <span class="shead__rule" aria-hidden="true"></span>
+    <span class="muted">{kicker}</span>
+  </p>
+  <Tag class="shead__title display h2" id={`${id}-title`} data-reveal style="--i:1">
+    <Fragment set:html={title} />
+  </Tag>
+  {Astro.slots.has('default') && <div class="shead__intro" data-reveal style="--i:2"><slot /></div>}
+</header>
+
+<style>
+  .shead {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+  .shead__slate {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .shead__tc {
+    color: var(--volt);
+    font-variant-numeric: tabular-nums;
+  }
+  .shead__rule {
+    width: 3rem;
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .shead__title :global(em) {
+    font-style: normal;
+    color: var(--volt);
+  }
+  .shead__intro {
+    max-width: 52ch;
+    color: var(--muted);
+    font-size: var(--fs-lead);
+    line-height: 1.45;
+  }
+</style>

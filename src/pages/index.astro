@@ -1,0 +1,205 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Featured from '../components/Featured.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import VideoLoop from '../components/VideoLoop.astro';
+import ShortsRail from '../components/ShortsRail.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import { projects } from '../data/projects';
+import { motion } from '../data/motion';
+import { mediaUrl } from '../lib/media';
+import { posterUrl } from '../lib/posters';
+import { totals } from '../lib/portfolio';
+
+const [lead, ...rest] = projects;
+// The poster is the LCP: one mid-size file, preloaded at high priority.
+const heroPoster = await posterUrl('hero-poster', 960);
+const fullReelPoster = await posterUrl('ba-full-poster', 720);
+---
+
+<Base preloadImage={heroPoster}>
+  <Hero posterSrc={heroPoster} />
+
+  <!-- HOOK: the single biggest piece, playable in place -->
+  <section class="section work" id="work" aria-labelledby="work-title">
+    <div class="wrap">
+      <SectionHead id="work" tc="00:00:12:00" kicker="Selected work" title={`${totals.videos} videos. <em>Start with the biggest.</em>`}>
+        <p>Every number here is a public YouTube count. Open a case study for the full episode list.</p>
+      </SectionHead>
+      <Featured project={lead} index={1} />
+    </div>
+  </section>
+
+  <!-- BUILD: proof of what the edit adds -->
+  <section class="section ba-sec" id="before-after" aria-labelledby="before-after-title">
+    <div class="wrap ba-sec__grid">
+      <div class="ba-sec__copy">
+        <SectionHead id="before-after" tc="00:01:30:00" kicker="Raw → Final" title="Same take.<br/><em>Different video.</em>">
+          <p>Nine seconds from a Tornado-sponsored Fantasy Premier League Short. Drag across to see what the edit adds.</p>
+        </SectionHead>
+        <ol role="list" class="ba-notes">
+          <li data-reveal style="--i:0"><span class="label volt">01</span><div><h3>Reframe</h3><p>A punch-in turns the wide studio shot into a vertical close-up.</p></div></li>
+          <li data-reveal style="--i:1"><span class="label volt">02</span><div><h3>Captions</h3><p>Word-by-word captions that switch between Arabic and FPL’s English terms.</p></div></li>
+          <li data-reveal style="--i:2"><span class="label volt">03</span><div><h3>Graphics on the beat</h3><p>Free Hit and Triple Captain chip cards land as the words are said.</p></div></li>
+          <li data-reveal style="--i:3"><span class="label volt">04</span><div><h3>Mood</h3><p>A rain overlay rolls in as the talk turns to chips that failed.</p></div></li>
+          <li data-reveal style="--i:4"><span class="label volt">05</span><div><h3>Brand</h3><p>Tornado and Premier League marks locked in frame without covering the host.</p></div></li>
+        </ol>
+        <button
+          type="button"
+          class="btn ba-sec__full"
+          data-modal-video={mediaUrl('before-after/ba-full.mp4')}
+          data-modal-poster={fullReelPoster}
+          data-modal-orient="tall"
+          data-modal-label="Original before / after reel"
+          data-track="video_play"
+          data-track-where="before-after-full"
+        >
+          Watch the original side-by-side <span class="arrow" aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <div class="ba-sec__stage" data-reveal>
+        <BeforeAfter />
+      </div>
+    </div>
+  </section>
+
+  <!-- REVEAL: range -->
+  <section class="section more" aria-labelledby="more-title">
+    <div class="wrap">
+      <SectionHead id="more" tc="00:02:40:00" kicker="More work" title="Quiz shows, podcasts,<br/><em>interviews, Shorts.</em>" />
+      <div class="more__list">
+        {rest.map((p, i) => <ProjectRow project={p} index={i + 2} />)}
+      </div>
+      <p class="more__all">
+        <a href="/work/" class="btn">Every edit, one list <span class="arrow" aria-hidden="true">→</span></a>
+      </p>
+    </div>
+  </section>
+
+  <!-- PROOF: craft up close -->
+  <section class="section motion" id="motion" aria-labelledby="motion-title">
+    <div class="wrap">
+      <SectionHead id="motion" tc="00:03:20:00" kicker="Motion graphics" title="Motion that<br/><em>carries the show.</em>">
+        <p>A segment sting, a kit reveal and a scoreboard package. They play muted while they’re on screen — turn the sound on for the hits.</p>
+      </SectionHead>
+      <div class="motion__grid">
+        {motion.map((m, i) => <VideoLoop piece={m} class={`motion__item motion__item--${i}`} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section shorts" aria-labelledby="shorts-title">
+    <div class="wrap">
+      <SectionHead id="shorts" tc="00:03:50:00" kicker="Vertical" title="Shorts that <em>travel.</em>">
+        <p>The most-watched first. Tap one to play it here.</p>
+      </SectionHead>
+    </div>
+    <ShortsRail />
+  </section>
+
+  <About />
+  <Contact />
+</Base>
+
+<style>
+  .work {
+    padding-top: var(--s-8);
+  }
+
+  .ba-sec {
+    background: var(--ink-2);
+    border-block: 1px solid var(--line);
+  }
+  .ba-sec__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: start;
+  }
+  .ba-sec__stage {
+    position: sticky;
+    top: 6rem;
+  }
+  .ba-notes {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line);
+    margin-bottom: var(--s-6);
+  }
+  .ba-notes li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: var(--s-3);
+    padding-block: var(--s-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .ba-notes h3 {
+    font-family: var(--font-display);
+    font-stretch: 75%;
+    font-weight: 800;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: var(--s-1);
+  }
+  .ba-notes p {
+    color: var(--muted);
+    font-size: var(--fs-small);
+  }
+
+  .more__all {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s-6);
+  }
+
+  .motion__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(2rem, 4vw, 3.5rem) clamp(1rem, 3vw, 2.5rem);
+    align-items: start;
+  }
+  .motion__grid :global(.motion__item--0) {
+    grid-column: 1 / span 8;
+  }
+  .motion__grid :global(.motion__item--1) {
+    grid-column: 9 / span 4;
+    margin-top: clamp(2rem, 8vw, 8rem);
+  }
+  .motion__grid :global(.motion__item--2) {
+    grid-column: 3 / span 7;
+  }
+
+  .shorts {
+    padding-top: 0;
+  }
+
+  @media (max-width: 960px) {
+    .ba-sec__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .ba-sec__stage {
+      position: static;
+      grid-row: 2;
+    }
+    .ba-sec__copy {
+      display: contents;
+    }
+    .ba-notes {
+      grid-row: 3;
+    }
+    .ba-sec__full {
+      grid-row: 4;
+      justify-self: start;
+    }
+    .motion__grid :global(.motion__item--0),
+    .motion__grid :global(.motion__item--1),
+    .motion__grid :global(.motion__item--2) {
+      grid-column: 1 / -1;
+      margin-top: 0;
+    }
+  }
+</style>

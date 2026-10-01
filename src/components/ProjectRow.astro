@@ -1,0 +1,216 @@
+---
+import { Picture } from 'astro:assets';
+import type { Project } from '../data/types';
+import { getVideo, projectStats } from '../lib/portfolio';
+import { thumb } from '../lib/thumbs';
+import { compact, durationWords } from '../lib/format';
+
+interface Props {
+  project: Project;
+  index: number;
+}
+const { project: p, index } = Astro.props;
+const s = projectStats(p);
+const vertical = s.top.kind === 'short';
+const tallIds = vertical ? [...p.episodes].sort((a, b) => getVideo(b).views - getVideo(a).views).slice(0, 3) : [];
+const runtime =
+  s.count === 1 ? durationWords(s.minDuration) : `${durationWords(s.minDuration)} – ${durationWords(s.maxDuration)}`;
+---
+
+<article class="row" data-reveal aria-labelledby={`row-${p.slug}`}>
+  <a class="row__link" href={`/work/${p.slug}/`} data-cursor="View" data-track="project_open" data-track-where={p.slug}>
+    <span class="row__idx label" aria-hidden="true">{String(index).padStart(2, '0')}</span>
+
+    <div class="row__main">
+      <p class="label muted">{s.channel.name} · {p.format}</p>
+      <h3 class="row__title display" id={`row-${p.slug}`}>{p.title}</h3>
+      {p.titleAr && <p class="row__ar" lang="ar" dir="rtl">{p.titleAr}</p>}
+      <p class="row__sum">{p.summary}</p>
+      <p class="row__more label">
+        <span>Case study</span> <span class="arrow" aria-hidden="true">→</span>
+      </p>
+    </div>
+
+    <dl class="row__stats">
+      <div><dt class="label dim">Views</dt><dd class="display">{compact(s.views)}</dd></div>
+      <div><dt class="label dim">{s.count === 1 ? 'Video' : 'Videos'}</dt><dd class="display">{s.count}</dd></div>
+      <div class="row__runtime"><dt class="label dim">Runtime</dt><dd class="label muted">{runtime}</dd></div>
+    </dl>
+
+    <div class:list={['row__media', { 'row__media--tall': vertical }]} aria-hidden="true">
+      {
+        vertical ? (
+          tallIds.map((id, i) => (
+            <Picture src={thumb(id, 'tall')} widths={[200, 320]} sizes="160px" formats={['avif', 'webp']} alt="" loading="lazy" style={`--k:${i}`} />
+          ))
+        ) : (
+          <Picture src={thumb(s.top.id)} widths={[480, 800]} sizes="(min-width: 900px) 30vw, 100vw" formats={['avif', 'webp']} alt="" loading="lazy" />
+        )
+      }
+    </div>
+  </a>
+</article>
+
+<style>
+  .row {
+    border-top: 1px solid var(--line);
+    position: relative;
+  }
+  .row::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--volt);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 600ms var(--ease-cut);
+  }
+  .row:hover::before,
+  .row:focus-within::before {
+    transform: none;
+  }
+  .row__link {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1.5fr) minmax(0, 0.7fr) minmax(0, 1fr);
+    gap: clamp(1rem, 3vw, 3rem);
+    padding-block: clamp(1.75rem, 3.5vw, 3rem);
+    align-items: start;
+  }
+  .row__link:focus-visible {
+    outline-offset: -2px;
+  }
+  .row__idx {
+    color: var(--volt);
+    padding-top: 0.2rem;
+  }
+  .row__main {
+    display: grid;
+    gap: var(--s-3);
+  }
+  .row__title {
+    font-size: clamp(2.25rem, 4.6vw, 4.25rem);
+    font-stretch: 66%;
+    transition: transform var(--t) var(--ease-out);
+  }
+  .row__link:hover .row__title {
+    transform: translateX(6px);
+  }
+  .row__ar {
+    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    font-weight: 800;
+    color: var(--muted);
+    text-align: left;
+  }
+  .row__sum {
+    color: var(--muted);
+    max-width: 50ch;
+  }
+  .row__more {
+    display: inline-flex;
+    gap: 0.5em;
+    color: var(--paper);
+  }
+  .row__more .arrow {
+    transition: transform var(--t) var(--ease-out);
+  }
+  .row__link:hover .row__more .arrow {
+    transform: translateX(4px);
+  }
+  .row__stats {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+  .row__stats dd.display {
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    font-stretch: 70%;
+    line-height: 1;
+    margin-top: var(--s-1);
+  }
+  .row__stats div:first-child dd {
+    color: var(--volt);
+  }
+  .row__runtime dd {
+    margin-top: var(--s-1);
+  }
+  .row__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--ink-3);
+  }
+  .row__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-cine) var(--ease-out);
+  }
+  .row__link:hover .row__media:not(.row__media--tall) :global(img) {
+    transform: scale(1.04);
+  }
+  .row__media--tall {
+    background: none;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .row__media--tall :global(img) {
+    width: 34%;
+    height: auto;
+    aspect-ratio: 9 / 16;
+    margin-inline: -3%;
+    box-shadow: 0 10px 40px rgb(0 0 0 / 0.5);
+    transform: rotate(calc((var(--k) - 1) * 5deg)) translateY(calc((var(--k) - 1) * (var(--k) - 1) * 6px));
+    transition: transform var(--t-cine) var(--ease-out);
+  }
+  .row__link:hover .row__media--tall :global(img) {
+    transform: rotate(calc((var(--k) - 1) * 8deg)) translateY(calc((var(--k) - 1) * (var(--k) - 1) * 10px));
+  }
+  .row__media--tall :global(img:nth-child(2)) {
+    z-index: 1;
+  }
+
+  @media (max-width: 1100px) {
+    .row__link {
+      grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 0.9fr);
+    }
+    .row__stats {
+      grid-column: 2;
+      grid-row: 2;
+      grid-template-columns: repeat(3, auto);
+      justify-content: start;
+      gap: var(--s-6);
+    }
+    .row__media {
+      grid-column: 3;
+      grid-row: 1 / span 2;
+    }
+  }
+  @media (max-width: 720px) {
+    .row__link {
+      grid-template-columns: 1fr;
+      gap: var(--s-4);
+    }
+    .row__idx {
+      display: none;
+    }
+    .row__media,
+    .row__stats {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .row__media {
+      order: -1;
+    }
+    .row__media--tall {
+      aspect-ratio: 16 / 10;
+    }
+    .row__media--tall :global(img) {
+      width: 30%;
+    }
+  }
+</style>

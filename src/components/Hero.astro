@@ -1,0 +1,345 @@
+---
+import { site } from '../data/site';
+import { STATS_SNAPSHOT_DATE } from '../data/videos';
+import { totals } from '../lib/portfolio';
+import { compact, longDate } from '../lib/format';
+import { mediaUrl } from '../lib/media';
+import Text from './Text.astro';
+
+interface Props {
+  posterSrc: string;
+}
+const { posterSrc } = Astro.props;
+
+const [first, last] = site.name.split(' ');
+
+const stats = [
+  { value: compact(totals.views), label: 'Public views across these edits' },
+  { value: String(totals.videos), label: 'Published videos' },
+  { value: `${totals.hours} h`, label: 'Of published runtime' },
+  { value: compact(totals.topVideo.views), label: 'Views on the top episode' },
+];
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap hero__grid">
+    <p class="hero__slate label">
+      <span class="rec-dot" aria-hidden="true"></span>
+      <span>{site.role}</span>
+      <span class="dim" aria-hidden="true">/</span>
+      <span class="muted">{site.specialisation}</span>
+    </p>
+
+    <h1 class="hero__name display" id="hero-title">
+      <span class="hero__line"><span class="hero__word">{first}</span></span>
+      <span class="hero__line hero__line--2"><span class="hero__word">{last}</span></span>
+      <span class="visually-hidden">, {site.role}</span>
+    </h1>
+
+    <figure class="hero__monitor ticks" data-hero>
+      <div class="hero__screen">
+        <video
+          class="hero__video"
+          data-hero-video
+          data-src-small={mediaUrl('hero/hero-loop-480.mp4')}
+          data-src-large={mediaUrl('hero/hero-loop-720.mp4')}
+          poster={posterSrc}
+          width="1280"
+          height="720"
+          muted
+          loop
+          playsinline
+          preload="none"
+          aria-label="Silent loop of motion-graphics work: a World Cup kit reveal, an FPL segment sting and a scoreboard package"
+        ></video>
+        <div class="hero__hud label" aria-hidden="true">
+          <span><span class="hud-tag">PGM</span> Motion work</span>
+          <span class="hero__tc" data-timecode>00:00:00:00</span>
+        </div>
+        <button class="hero__pause" type="button" data-hero-toggle aria-pressed="false" hidden>
+          <span class="visually-hidden" data-hero-toggle-label>Pause background video</span>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" class="i-pause"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor" /></svg>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" class="i-play"><path d="M4 2l10 6-10 6z" fill="currentColor" /></svg>
+        </button>
+      </div>
+      <figcaption class="hero__caption label dim">
+        {
+          site.showreel.youtubeId ? (
+            <button type="button" class="link volt" data-modal-yt={site.showreel.youtubeId} data-modal-label="Showreel" data-track="showreel_play">
+              ▶ Watch the showreel
+            </button>
+          ) : (
+            <>
+              <span>Motion work from the shows, on loop.</span> <Text value={site.showreel.placeholder} />
+            </>
+          )
+        }
+      </figcaption>
+    </figure>
+
+    <div class="hero__copy">
+      <p class="lead">{site.positioning}</p>
+      <div class="hero__ctas">
+        <a href="#work" class="btn btn--primary" data-track="cta_work" data-track-where="hero">View work <span class="arrow" aria-hidden="true">↓</span></a>
+        <a href="#contact" class="btn" data-track="cta_contact" data-track-where="hero">Start a project</a>
+      </div>
+    </div>
+
+    <div class="hero__stats">
+      <dl class="stats">
+        {
+          stats.map((s, i) => (
+            <div class="stat" data-reveal style={`--i:${i}`}>
+              <dt class="label muted">{s.label}</dt>
+              <dd class="stat__v display">{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="label dim hero__source">
+        Public YouTube data · {longDate(STATS_SNAPSHOT_DATE)} · Erza3, Marwan Serry, Beta3 Aflam
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(1.5rem, 4vw, 3rem) var(--s-8);
+    position: relative;
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--s-5);
+    align-items: start;
+  }
+  .hero__slate {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6em;
+    margin-bottom: var(--s-4);
+  }
+  .hero__name {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    font-size: var(--fs-mega);
+    font-stretch: 64%;
+    font-weight: 850;
+    line-height: 0.84;
+    letter-spacing: -0.02em;
+    margin-left: -0.04em;
+  }
+  .hero__line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.02em;
+  }
+  .hero__word {
+    display: inline-block;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .hero__word {
+      animation: hero-rise 900ms var(--ease-cut) both;
+    }
+    .js .hero__line--2 .hero__word {
+      animation-delay: 90ms;
+    }
+    .js .hero__monitor {
+      animation: hero-wipe 1000ms var(--ease-cut) 180ms both;
+    }
+    .js .hero__copy,
+    .js .hero__slate {
+      animation: hero-fade 800ms var(--ease-out) 380ms both;
+    }
+  }
+  @keyframes hero-rise {
+    from {
+      transform: translate3d(0, 102%, 0);
+    }
+  }
+  @keyframes hero-wipe {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+    to {
+      clip-path: inset(-20px -20px -20px -20px);
+    }
+  }
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  /* Monitor sits beside the short second line of the name on wide screens */
+  .hero__monitor {
+    grid-column: 7 / -1;
+    grid-row: 2 / span 2;
+    align-self: end;
+    margin-top: calc(var(--fs-mega) * 0.84 + var(--s-3));
+    position: relative;
+    z-index: 2;
+  }
+  .hero__screen {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--ink-3);
+    overflow: hidden;
+  }
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__hud {
+    position: absolute;
+    inset: 0 0 auto 0;
+    display: flex;
+    justify-content: space-between;
+    padding: var(--s-3) var(--s-3);
+    color: var(--paper);
+    text-shadow: 0 1px 8px rgb(0 0 0 / 0.6);
+    pointer-events: none;
+    font-size: 0.6875rem;
+  }
+  .hud-tag {
+    background: var(--rec);
+    color: var(--ink);
+    padding: 0.1em 0.4em;
+    margin-right: 0.4em;
+    text-shadow: none;
+    font-weight: 700;
+  }
+  .hero__tc {
+    font-variant-numeric: tabular-nums;
+  }
+  .hero__pause {
+    position: absolute;
+    right: var(--s-3);
+    bottom: var(--s-3);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgb(10 10 11 / 0.6);
+    border: 1px solid var(--line-strong);
+    backdrop-filter: blur(6px);
+    transition: background-color var(--t-fast);
+  }
+  .hero__pause:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .hero__pause .i-play,
+  .hero__pause[aria-pressed='true'] .i-pause {
+    display: none;
+  }
+  .hero__pause[aria-pressed='true'] .i-play {
+    display: block;
+  }
+  .hero__caption {
+    margin-top: var(--s-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: baseline;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .hero__copy {
+    grid-column: 1 / 6;
+    grid-row: 3;
+    align-self: end;
+    display: grid;
+    gap: var(--s-5);
+    padding-top: var(--s-6);
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  .hero__stats {
+    grid-column: 1 / -1;
+    margin-top: var(--s-6);
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line-strong);
+  }
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: var(--s-2);
+    padding: var(--s-4) var(--s-4) var(--s-4) 0;
+    border-right: 1px solid var(--line);
+  }
+  .stat + .stat {
+    padding-left: var(--s-4);
+  }
+  .stat:last-child {
+    border-right: 0;
+  }
+  .stat__v {
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    font-stretch: 70%;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat:first-child .stat__v {
+    color: var(--volt);
+  }
+  .hero__source {
+    margin-top: var(--s-3);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 1100px) {
+    .hero__monitor {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      margin-top: var(--s-5);
+    }
+    .hero__copy {
+      grid-column: 1 / -1;
+      grid-row: 4;
+    }
+    .hero__copy .lead {
+      max-width: 46ch;
+    }
+  }
+  @media (max-width: 640px) {
+    .hero__name {
+      font-size: clamp(4rem, 24vw, 8rem);
+    }
+    .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat {
+      padding: var(--s-4) var(--s-3) var(--s-4) 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .stat:nth-child(2n) {
+      border-right: 0;
+      padding-left: var(--s-4);
+    }
+    .stats .stat:nth-child(2n + 1) {
+      padding-left: 0;
+    }
+    .hero__ctas .btn {
+      flex: 1 1 auto;
+    }
+  }
+</style>

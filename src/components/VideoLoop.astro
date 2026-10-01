@@ -1,0 +1,150 @@
+---
+/**
+ * Short self-hosted clip. Plays muted only while on screen (never with
+ * reduced motion or Save-Data), with play/pause, sound and fullscreen.
+ */
+import type { MotionPiece } from '../data/types';
+import { mediaUrl } from '../lib/media';
+import { posterUrl } from '../lib/posters';
+
+interface Props {
+  piece: MotionPiece;
+  class?: string;
+  headingLevel?: 'h3' | 'h4';
+}
+const { piece: m, class: className, headingLevel: H = 'h3' } = Astro.props;
+const poster = await posterUrl(m.poster, 1280);
+---
+
+<figure class:list={['loop', className]} data-loop>
+  <div class="loop__frame" style={`aspect-ratio:${m.width}/${m.height}`}>
+    <video
+      class="loop__video"
+      data-loop-video
+      data-src={mediaUrl(m.video)}
+      poster={poster}
+      width={m.width}
+      height={m.height}
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-label={`${m.title} — motion graphics clip, ${m.durationSec} seconds`}></video>
+    <div class="loop__ui">
+      <button type="button" class="loop__btn" data-loop-play aria-pressed="false">
+        <span class="visually-hidden" data-loop-play-label>Play {m.title}</span>
+        <svg class="i-play" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor" /></svg>
+        <svg class="i-pause" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor" /></svg>
+      </button>
+      <button type="button" class="loop__btn" data-loop-sound aria-pressed="false">
+        <span class="visually-hidden">Sound for {m.title}</span>
+        <svg class="i-muted" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l4 6M21 9l-4 6" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        <svg class="i-sound" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8.5a5 5 0 010 7M19.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+      </button>
+      <button type="button" class="loop__btn" data-loop-fs>
+        <span class="visually-hidden">Fullscreen {m.title}</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+      </button>
+    </div>
+    <div class="loop__bar" aria-hidden="true"><span data-loop-progress></span></div>
+    <p class="loop__err label" data-loop-error hidden>Clip unavailable right now.</p>
+  </div>
+  <figcaption class="loop__cap">
+    <H class="loop__title">{m.title}</H>
+    <p class="loop__desc">{m.description}</p>
+  </figcaption>
+</figure>
+
+<style>
+  .loop {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+  .loop__frame {
+    position: relative;
+    background: var(--ink-3);
+    overflow: hidden;
+  }
+  .loop__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .loop__ui {
+    position: absolute;
+    right: var(--s-3);
+    bottom: var(--s-3);
+    display: flex;
+    gap: var(--s-2);
+  }
+  .loop__btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgb(10 10 11 / 0.66);
+    border: 1px solid var(--line-strong);
+    backdrop-filter: blur(6px);
+    transition:
+      background-color var(--t-fast),
+      color var(--t-fast);
+  }
+  .loop__btn:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .loop__btn .i-pause,
+  .loop__btn .i-sound,
+  .loop__btn[aria-pressed='true'] .i-play,
+  .loop__btn[aria-pressed='true'] .i-muted {
+    display: none;
+  }
+  .loop__btn[aria-pressed='true'] .i-pause,
+  .loop__btn[aria-pressed='true'] .i-sound {
+    display: block;
+  }
+  .loop__bar {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2px;
+    background: rgb(242 240 234 / 0.15);
+  }
+  .loop__bar span {
+    display: block;
+    height: 100%;
+    background: var(--volt);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+  }
+  .loop__err {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(10 10 11 / 0.75);
+    color: var(--muted);
+  }
+  .loop__err[hidden] {
+    display: none;
+  }
+  .loop__cap {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .loop__title {
+    font-family: var(--font-display);
+    font-stretch: 75%;
+    font-weight: 750;
+    font-size: var(--fs-h4);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+  }
+  .loop__desc {
+    color: var(--muted);
+    font-size: var(--fs-small);
+    max-width: 48ch;
+  }
+</style>

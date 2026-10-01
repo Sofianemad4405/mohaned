@@ -1,0 +1,233 @@
+---
+import { site } from '../data/site';
+
+const links = [
+  { href: '/#work', id: 'work', label: 'Work' },
+  { href: '/#before-after', id: 'before-after', label: 'Before / After' },
+  { href: '/#motion', id: 'motion', label: 'Motion' },
+  { href: '/#about', id: 'about', label: 'About' },
+];
+const path = Astro.url.pathname;
+const onWork = path.startsWith('/work');
+---
+
+<header class="nav" data-nav>
+  <div class="nav__bar wrap">
+    <a href="/" class="nav__brand">
+      <span class="nav__mark" aria-hidden="true">{site.initials}</span>
+      <span class="nav__name">{site.name}</span><span class="visually-hidden"> — home</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <ul role="list">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} data-nav-link={l.id} aria-current={l.id === 'work' && onWork ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a href="/#contact" class="btn btn--primary nav__cta" data-track="cta_contact" data-track-where="nav">
+      Start a project
+    </a>
+
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>
+      <span class="visually-hidden">Menu</span>
+      <span class="nav__burger" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+
+  <div class="nav__menu" id="nav-menu" data-nav-menu hidden>
+    <nav aria-label="Mobile">
+      <ol role="list" class="nav__menu-list">
+        {
+          [...links, { href: '/#contact', id: 'contact', label: 'Contact' }].map((l, i) => (
+            <li style={`--i:${i}`}>
+              <a href={l.href} data-nav-close>
+                <span class="label dim">0{i + 1}</span>
+                <span class="display">{l.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+    <a class="nav__menu-mail label" href={`mailto:${site.contact.email}`} data-track="cta_email" data-track-where="menu">{site.contact.email}</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    transition:
+      background-color var(--t) var(--ease-out),
+      border-color var(--t) var(--ease-out);
+    border-bottom: 1px solid transparent;
+  }
+  .nav.is-scrolled {
+    background: rgb(10 10 11 / 0.82);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom-color: var(--line);
+  }
+  .nav__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    height: 4.25rem;
+  }
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-right: auto;
+    min-height: 44px;
+  }
+  .nav__mark {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    background: var(--volt);
+    color: var(--volt-ink);
+    font-family: var(--font-display);
+    font-stretch: 70%;
+    font-weight: 900;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    border-radius: var(--r-1);
+  }
+  .nav__name {
+    font-family: var(--font-display);
+    font-stretch: 80%;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .nav__links ul {
+    display: flex;
+    gap: var(--s-5);
+  }
+  .nav__links a {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color var(--t-fast) var(--ease-out);
+  }
+  .nav__links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.25rem;
+    height: 2px;
+    background: var(--volt);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--t) var(--ease-cut);
+  }
+  .nav__links a:hover,
+  .nav__links a[aria-current] {
+    color: var(--paper);
+  }
+  .nav__links a[aria-current]::after {
+    transform: none;
+  }
+  .nav__cta {
+    min-height: 2.5rem;
+    padding: 0 1.1rem;
+    font-size: 0.75rem;
+  }
+  .nav__toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    margin-right: -10px;
+  }
+  .nav__burger {
+    display: grid;
+    gap: 6px;
+    width: 22px;
+  }
+  .nav__burger i {
+    display: block;
+    height: 2px;
+    background: var(--paper);
+    transition: transform var(--t) var(--ease-cut);
+  }
+  .nav__toggle[aria-expanded='true'] .nav__burger i:first-child {
+    transform: translateY(4px) rotate(45deg);
+  }
+  .nav__toggle[aria-expanded='true'] .nav__burger i:last-child {
+    transform: translateY(-4px) rotate(-45deg);
+  }
+
+  .nav__menu {
+    position: fixed;
+    inset: 4.25rem 0 0 0;
+    background: var(--ink);
+    padding: var(--s-6) var(--gutter) calc(var(--s-6) + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+  }
+  .nav__menu[hidden] {
+    display: none;
+  }
+  .nav__menu-list {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .nav__menu-list a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-2);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav__menu-list .display {
+    font-size: clamp(2.75rem, 13vw, 4.5rem);
+  }
+  .nav__menu-mail {
+    color: var(--volt);
+    padding-block: var(--s-4);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .nav__menu:not([hidden]) li {
+      animation: menu-in 480ms var(--ease-out) both;
+      animation-delay: calc(var(--i) * 50ms);
+    }
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  @media (max-width: 960px) {
+    .nav__links,
+    .nav__cta {
+      display: none;
+    }
+    .nav__toggle {
+      display: grid;
+    }
+  }
+</style>

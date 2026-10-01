@@ -1,0 +1,170 @@
+---
+/**
+ * Poster → click → YouTube iframe. Nothing from YouTube loads until the
+ * visitor asks for it. A plain "Watch on YouTube" link is always present as
+ * the fallback (no JS, blocked embeds, offline).
+ */
+import { Picture } from 'astro:assets';
+import { getVideo } from '../lib/portfolio';
+import { thumb } from '../lib/thumbs';
+import { compact, duration } from '../lib/format';
+import { youtube } from '../lib/media';
+
+interface Props {
+  id: string;
+  label?: string;
+  sizes?: string;
+  eager?: boolean;
+  /** Fetch the poster at high priority (only for the page's LCP image). */
+  priority?: boolean;
+  /** Group id: players in one group swap videos instead of each owning one. */
+  group?: string;
+  class?: string;
+}
+const { id, label, sizes = '(min-width: 1100px) 66vw, 100vw', eager = false, priority = false, group, class: className } = Astro.props;
+const v = getVideo(id);
+---
+
+<div class:list={['yt', className]} data-yt={id} data-yt-group={group}>
+  <div class="yt__frame">
+    <button
+      class="yt__btn"
+      type="button"
+      data-yt-play
+      data-cursor="Play"
+    >
+      <span class="visually-hidden">Play {label ? `${label}: ` : ''}{v.title} — loads the YouTube player</span>
+      <Picture
+        src={thumb(id)}
+        widths={[480, 800, 1280]}
+        sizes={sizes}
+        formats={['avif', 'webp']}
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        class="yt__img"
+        data-yt-img
+      />
+      <span class="yt__shade" aria-hidden="true"></span>
+      <span class="yt__play" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M7 4.5v15l13-7.5z" fill="currentColor" /></svg>
+      </span>
+      <span class="yt__meta label" aria-hidden="true">
+        <span data-yt-duration>{duration(v.durationSec)}</span>
+        <span data-yt-views>{compact(v.views)} views</span>
+      </span>
+    </button>
+    <div class="yt__loading" aria-hidden="true"><span></span></div>
+  </div>
+  <a class="yt__ext label link" href={youtube.watch(id, v.kind)} target="_blank" rel="noopener" data-yt-ext data-track="video_external" data-track-where={id}>
+    Watch on YouTube ↗
+  </a>
+</div>
+
+<style>
+  .yt {
+    display: grid;
+    gap: var(--s-3);
+  }
+  .yt__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--ink-3);
+    overflow: hidden;
+  }
+  .yt__btn {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+  .yt__btn :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-cine) var(--ease-out);
+  }
+  .yt__btn:hover :global(img) {
+    transform: scale(1.03);
+  }
+  .yt__shade {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay);
+  }
+  .yt__play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: clamp(3.5rem, 7vw, 5.5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--volt);
+    color: var(--volt-ink);
+    transform: translate(-50%, -50%);
+    transition:
+      transform var(--t) var(--ease-out),
+      box-shadow var(--t) var(--ease-out);
+    box-shadow: 0 0 0 0 rgb(216 255 60 / 0.35);
+  }
+  .yt__play svg {
+    margin-left: 3px;
+  }
+  .yt__btn:hover .yt__play,
+  .yt__btn:focus-visible .yt__play {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow: 0 0 0 12px rgb(216 255 60 / 0.16);
+  }
+  .yt__btn:focus-visible {
+    outline-offset: -4px;
+  }
+  .yt__meta {
+    position: absolute;
+    left: var(--s-3);
+    bottom: var(--s-3);
+    right: var(--s-3);
+    display: flex;
+    justify-content: space-between;
+    color: var(--paper);
+    font-variant-numeric: tabular-nums;
+  }
+  .yt__loading {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2px;
+    overflow: hidden;
+    opacity: 0;
+  }
+  .yt.is-loading .yt__loading {
+    opacity: 1;
+  }
+  .yt__loading span {
+    display: block;
+    width: 30%;
+    height: 100%;
+    background: var(--volt);
+    animation: yt-load 900ms var(--ease-cut) infinite;
+  }
+  @keyframes yt-load {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(340%);
+    }
+  }
+  .yt__frame :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .yt__ext {
+    justify-self: start;
+    color: var(--muted);
+  }
+</style>

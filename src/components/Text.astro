@@ -1,0 +1,29 @@
+---
+/**
+ * Renders copy that may still be a placeholder ("[EMAIL NEEDED]").
+ * Placeholders get the dashed .ph treatment, or vanish when
+ * site.showPlaceholders is false.
+ */
+import { site } from '../data/site';
+import { isPlaceholder } from '../lib/format';
+
+interface Props {
+  value: string;
+  as?: 'span' | 'p' | 'dd' | 'li';
+  class?: string;
+}
+const { value, as: Tag = 'span', class: className } = Astro.props;
+const ph = isPlaceholder(value);
+---
+
+{
+  ph ? (
+    site.showPlaceholders && (
+      <Tag class={className}>
+        <span class="ph" data-placeholder>{value}</span>
+      </Tag>
+    )
+  ) : (
+    <Tag class={className}>{value}</Tag>
+  )
+}

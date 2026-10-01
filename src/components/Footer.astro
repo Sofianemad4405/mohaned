@@ -1,0 +1,112 @@
+---
+import { site } from '../data/site';
+import { longDate } from '../lib/format';
+import { STATS_SNAPSHOT_DATE } from '../data/videos';
+import Text from './Text.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div class="foot__id">
+      <p class="display foot__name">{site.name}</p>
+      <p class="label muted">{site.role} · {site.specialisation}</p>
+      <Text value={site.location} as="p" class="label muted" />
+    </div>
+
+    <nav class="foot__col" aria-label="Footer">
+      <p class="label dim">Index</p>
+      <ul role="list">
+        <li><a class="link" href="/work/">All work</a></li>
+        <li><a class="link" href="/#before-after">Before / After</a></li>
+        <li><a class="link" href="/#motion">Motion</a></li>
+        <li><a class="link" href="/#about">About</a></li>
+        <li><a class="link" href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="foot__col">
+      <p class="label dim">Contact</p>
+      <ul role="list">
+        <li><a class="link" href={`mailto:${site.contact.email}`} data-track="cta_email" data-track-where="footer">{site.contact.email}</a></li>
+        {
+          site.socials.map((s) =>
+            s.href ? (
+              <li>
+                <a class="link" href={s.href} rel="me noopener" target="_blank" data-track="social" data-track-where={s.label}>
+                  {s.label} ↗
+                </a>
+              </li>
+            ) : (
+              <Text value={s.placeholder} as="li" />
+            ),
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap foot__base label dim">
+    <p>© {year} {site.name}</p>
+    <p>View counts: public YouTube data, {longDate(STATS_SNAPSHOT_DATE)}. Videos belong to their channels.</p>
+    <a class="link" href="#main">Back to top ↑</a>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    border-top: 1px solid var(--line);
+    padding-block: var(--s-8) var(--s-6);
+  }
+  .foot__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.3fr;
+    gap: var(--s-7);
+  }
+  .foot__name {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: var(--s-3);
+  }
+  .foot__id {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+  }
+  .foot__col {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+  }
+  .foot__col ul {
+    display: grid;
+    gap: var(--s-2);
+    font-size: var(--fs-small);
+  }
+  .foot__col a {
+    display: inline-block;
+    padding-block: 0.2rem;
+  }
+  .foot__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-3) var(--s-6);
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 760px) {
+    .foot__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .foot__id {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 420px) {
+    .foot__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

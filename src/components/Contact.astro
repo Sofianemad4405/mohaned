@@ -1,0 +1,307 @@
+---
+import { site } from '../data/site';
+import Text from './Text.astro';
+
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
+const projectTypes = ['Long-form show', 'Podcast', 'Shorts / Reels', 'Interview', 'Motion graphics', 'Full-time role', 'Something else'];
+const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5,000', '$5,000+', 'Salaried role'];
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap contact__grid">
+    <div class="contact__pitch">
+      <p class="label" data-reveal><span class="volt">00:05:00:00</span> <span class="dim">—</span> <span class="muted">Contact</span></p>
+      <h2 class="display contact__title" id="contact-title" data-reveal style="--i:1">
+        Send me the <span class="volt">footage.</span>
+      </h2>
+      <p class="lead muted" data-reveal style="--i:2">
+        A weekly show, a podcast that needs Shorts, or a seat on your team — tell me what you’re making and when it needs to go out.
+      </p>
+
+      <ul role="list" class="contact__ways" data-reveal style="--i:3">
+        <li>
+          <span class="label dim">Email</span>
+          <span class="contact__mail">
+            <a href={`mailto:${site.contact.email}`} class="link" data-track="cta_email" data-track-where="contact">{site.contact.email}</a>
+            <button type="button" class="contact__copy label" data-copy={site.contact.email}>Copy</button>
+          </span>
+        </li>
+        <li>
+          <span class="label dim">WhatsApp</span>
+          {
+            site.contact.whatsapp ? (
+              <a class="link" href={`https://wa.me/${site.contact.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener" data-track="cta_whatsapp">
+                {site.contact.whatsapp}
+              </a>
+            ) : (
+              <Text value={site.contact.whatsappPlaceholder} />
+            )
+          }
+        </li>
+        {
+          site.socials.map((s) => (
+            <li>
+              <span class="label dim">{s.label}</span>
+              {s.href ? (
+                <a class="link" href={s.href} target="_blank" rel="me noopener" data-track="social" data-track-where={s.label}>
+                  {s.href.replace(/^https?:\/\/(www\.)?/, '')}
+                </a>
+              ) : (
+                <Text value={s.placeholder} />
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <form class="form" data-contact-form data-endpoint={endpoint} data-email={site.contact.email} novalidate data-reveal style="--i:2">
+      <div class="form__row">
+        <div class="field">
+          <label for="cf-name">Name <span class="req" aria-hidden="true">*</span></label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required aria-describedby="cf-name-err" />
+          <p class="field__err" id="cf-name-err" data-err></p>
+        </div>
+        <div class="field">
+          <label for="cf-email">Email <span class="req" aria-hidden="true">*</span></label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="cf-email-err" />
+          <p class="field__err" id="cf-email-err" data-err></p>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-company">Company / channel <span class="opt">optional</span></label>
+        <input id="cf-company" name="company" type="text" autocomplete="organization" />
+      </div>
+      <div class="form__row">
+        <div class="field">
+          <label for="cf-type">Project type <span class="opt">optional</span></label>
+          <select id="cf-type" name="type">
+            <option value="">Choose one</option>
+            {projectTypes.map((t) => <option>{t}</option>)}
+          </select>
+        </div>
+        <div class="field">
+          <label for="cf-budget">Budget <span class="opt">optional</span></label>
+          <select id="cf-budget" name="budget">
+            <option value="">Choose one</option>
+            {budgets.map((b) => <option>{b}</option>)}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-deadline">Deadline <span class="opt">optional</span></label>
+        <input id="cf-deadline" name="deadline" type="text" placeholder="e.g. first episode by 15 Nov" />
+      </div>
+      <div class="field">
+        <label for="cf-msg">Message <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="cf-msg" name="message" rows="5" required aria-describedby="cf-msg-err" placeholder="What are you making, how long, how often?"></textarea>
+        <p class="field__err" id="cf-msg-err" data-err></p>
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label for="cf-web">Leave this empty</label>
+        <input id="cf-web" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="form__foot">
+        <button type="submit" class="btn btn--primary" data-submit>
+          <span data-submit-label>Send brief</span> <span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <p class="form__hint label dim">
+          {endpoint ? 'Goes straight to my inbox.' : 'Opens your email app with everything filled in.'}
+        </p>
+      </div>
+      <p class="form__status" role="status" aria-live="polite" data-status></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contact {
+    border-top: 1px solid var(--line);
+    background:
+      radial-gradient(60% 50% at 10% 0%, rgb(216 255 60 / 0.06), transparent 70%),
+      var(--ink);
+  }
+  .contact__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 7vw, 7rem);
+    align-items: start;
+  }
+  .contact__pitch {
+    display: grid;
+    gap: var(--s-5);
+  }
+  .contact__title {
+    font-size: clamp(3.25rem, 6.4vw, 6.5rem);
+    font-stretch: 64%;
+    text-wrap: balance;
+  }
+  .contact__ways {
+    display: grid;
+    border-top: 1px solid var(--line);
+    margin-top: var(--s-3);
+  }
+  .contact__ways li {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: var(--s-3);
+    align-items: baseline;
+    padding-block: var(--s-3);
+    border-bottom: 1px solid var(--line);
+    overflow-wrap: anywhere;
+  }
+  .contact__mail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-3);
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  }
+  .contact__copy {
+    color: var(--muted);
+    padding: 0.35em 0.7em;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    min-height: 32px;
+  }
+  .contact__copy:hover {
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  .form {
+    display: grid;
+    gap: var(--s-4);
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+  }
+  .form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-4);
+  }
+  .field {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .field label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .req {
+    color: var(--volt);
+  }
+  .opt {
+    color: var(--dim);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 0.3em;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75rem 0.9rem;
+    background: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-1);
+    color: var(--paper);
+    font-size: 1rem;
+    transition:
+      border-color var(--t-fast),
+      box-shadow var(--t-fast);
+  }
+  .field select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) 50%,
+      calc(100% - 13px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 2.5rem;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder {
+    color: var(--dim);
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--volt);
+    box-shadow: 0 0 0 3px var(--volt-soft);
+  }
+  .field [aria-invalid='true'] {
+    border-color: var(--rec);
+  }
+  .field__err {
+    color: #ff8a73;
+    font-size: 0.8125rem;
+    min-height: 0;
+  }
+  .field__err:empty {
+    display: none;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4);
+    margin-top: var(--s-2);
+  }
+  .form__hint {
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .form__status:empty {
+    display: none;
+  }
+  .form__status {
+    padding: var(--s-3) var(--s-4);
+    border-left: 2px solid var(--volt);
+    background: var(--volt-soft);
+  }
+  .form__status[data-tone='error'] {
+    border-color: var(--rec);
+    background: rgb(255 77 46 / 0.1);
+  }
+  .form.is-sending [data-submit] {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  @media (max-width: 960px) {
+    .contact__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .form__row {
+      grid-template-columns: 1fr;
+    }
+    .contact__ways li {
+      grid-template-columns: 1fr;
+      gap: var(--s-1);
+    }
+    .form__foot .btn {
+      width: 100%;
+    }
+  }
+</style>

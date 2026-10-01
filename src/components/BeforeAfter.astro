@@ -1,0 +1,258 @@
+---
+/**
+ * RAW → FINAL comparison. Both panels are cut from the same comparison reel
+ * in the Drive ("before after/1.mp4") so they are frame-locked; the script
+ * keeps them in sync. The raw panel comes from the reel's small inset, so it
+ * is softer than the camera original — noted on screen.
+ */
+import { mediaUrl } from '../lib/media';
+import { posterUrl } from '../lib/posters';
+
+const afterPoster = await posterUrl('ba-after-poster', 576);
+const beforePoster = await posterUrl('ba-before-poster', 576);
+---
+
+<div class="ba" data-ba style="--pos: 50%">
+  <div class="ba__stage ticks" data-ba-stage data-cursor="Drag">
+    <video
+      class="ba__vid"
+      data-ba-after
+      data-src={mediaUrl('before-after/ba-after.mp4')}
+      poster={afterPoster}
+      width="576"
+      height="676"
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      tabindex="-1"></video>
+    <video
+      class="ba__vid ba__vid--before"
+      data-ba-before
+      data-src={mediaUrl('before-after/ba-before.mp4')}
+      poster={beforePoster}
+      width="576"
+      height="676"
+      muted
+      loop
+      playsinline
+      preload="none"
+      aria-hidden="true"
+      tabindex="-1"></video>
+
+    <span class="ba__tag ba__tag--raw label" aria-hidden="true">Raw</span>
+    <span class="ba__tag ba__tag--final label" aria-hidden="true">Final</span>
+
+    <div
+      class="ba__handle"
+      data-ba-handle
+      role="slider"
+      tabindex="0"
+      aria-label="Compare raw footage and final edit"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="50"
+      aria-valuetext="Half raw, half final">
+      <span class="ba__grip" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" /></svg>
+      </span>
+    </div>
+  </div>
+
+  <div class="ba__controls">
+    <div class="ba__seg" role="group" aria-label="Comparison view">
+      <button type="button" class="ba__segbtn label" data-ba-set="100" aria-pressed="false">Raw</button>
+      <button type="button" class="ba__segbtn label" data-ba-set="50" aria-pressed="true">Split</button>
+      <button type="button" class="ba__segbtn label" data-ba-set="0" aria-pressed="false">Final</button>
+    </div>
+    <div class="ba__transport">
+      <span class="ba__tc label dim" data-ba-tc aria-hidden="true">00:00:00:00</span>
+      <button type="button" class="ba__icon" data-ba-play aria-pressed="false">
+        <span class="visually-hidden" data-ba-play-label>Play comparison</span>
+        <svg class="i-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor" /></svg>
+        <svg class="i-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor" /></svg>
+      </button>
+      <button type="button" class="ba__icon" data-ba-sound aria-pressed="false">
+        <span class="visually-hidden">Sound</span>
+        <svg class="i-muted" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l4 6M21 9l-4 6" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        <svg class="i-sound" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8.5a5 5 0 010 7M19.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+      </button>
+    </div>
+  </div>
+  <p class="ba__note label dim">Drag, tap, or use arrow keys. Raw panel is taken from the reel’s inset, so it’s lower resolution than the camera original.</p>
+</div>
+
+<style>
+  .ba {
+    display: grid;
+    gap: var(--s-3);
+    width: 100%;
+    max-width: min(34rem, calc((100svh - 12rem) * 576 / 676));
+    margin-inline: auto;
+  }
+  .ba__stage {
+    position: relative;
+    aspect-ratio: 576 / 676;
+    background: var(--ink-3);
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: ew-resize;
+  }
+  .ba__vid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .ba__vid--before {
+    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+    filter: none;
+  }
+  .ba__tag {
+    position: absolute;
+    bottom: var(--s-3);
+    padding: 0.35em 0.6em;
+    font-weight: 700;
+    pointer-events: none;
+    transition: opacity var(--t) var(--ease-out);
+  }
+  .ba__tag--raw {
+    left: var(--s-3);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .ba__tag--final {
+    right: var(--s-3);
+    background: var(--volt);
+    color: var(--volt-ink);
+  }
+  .ba[data-at='0'] .ba__tag--raw,
+  .ba[data-at='100'] .ba__tag--final {
+    opacity: 0;
+  }
+  .ba__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--volt);
+    cursor: ew-resize;
+    z-index: 2;
+    outline: none;
+  }
+  .ba__handle::before {
+    /* generous touch target */
+    content: '';
+    position: absolute;
+    inset: 0 -22px;
+  }
+  .ba__grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--volt);
+    color: var(--volt-ink);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 24px rgb(0 0 0 / 0.45);
+    transition: transform var(--t-fast) var(--ease-out);
+  }
+  .ba__stage:active .ba__grip,
+  .ba.is-dragging .ba__grip {
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+  .ba__handle:focus-visible .ba__grip {
+    box-shadow: var(--focus);
+  }
+  .ba.is-animating .ba__handle,
+  .ba.is-animating .ba__vid--before {
+    transition:
+      left 520ms var(--ease-cut),
+      clip-path 520ms var(--ease-cut);
+  }
+
+  .ba__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+  .ba__seg {
+    display: inline-flex;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    padding: 3px;
+  }
+  .ba__segbtn {
+    min-height: 40px;
+    padding: 0 0.95rem;
+    border-radius: var(--r-pill);
+    color: var(--muted);
+    transition:
+      background-color var(--t-fast),
+      color var(--t-fast);
+  }
+  .ba__segbtn:hover {
+    color: var(--paper);
+  }
+  .ba__segbtn[aria-pressed='true'] {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .ba__transport {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .ba__tc {
+    font-variant-numeric: tabular-nums;
+    margin-right: var(--s-2);
+  }
+  .ba__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    transition:
+      background-color var(--t-fast),
+      color var(--t-fast);
+  }
+  .ba__icon:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .ba__icon .i-pause,
+  .ba__icon .i-sound,
+  .ba__icon[aria-pressed='true'] .i-play,
+  .ba__icon[aria-pressed='true'] .i-muted {
+    display: none;
+  }
+  .ba__icon[aria-pressed='true'] .i-pause,
+  .ba__icon[aria-pressed='true'] .i-sound {
+    display: block;
+  }
+  .ba__note {
+    text-transform: none;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+  @media (max-width: 420px) {
+    .ba__tc {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+// One shared modal for vertical Shorts and the original before/after reel.
+// Triggers: any element with data-modal-yt="<id>" or data-modal-video="<url>".
+---
+
+<dialog class="modal" data-modal aria-labelledby="modal-title">
+  <div class="modal__inner">
+    <div class="modal__head">
+      <p class="label muted" id="modal-title" data-modal-title>Now playing</p>
+      <button class="modal__close" type="button" data-modal-close>
+        <span class="visually-hidden">Close player</span>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" /></svg>
+      </button>
+    </div>
+    <div class="modal__stage" data-modal-stage></div>
+    <a class="modal__ext label link" data-modal-ext href="#" target="_blank" rel="noopener" hidden>Open on YouTube ↗</a>
+  </div>
+</dialog>
+
+<style>
+  .modal {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--paper);
+    max-width: 100vw;
+    max-height: 100dvh;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .modal::backdrop {
+    background: rgb(5 5 6 / 0.92);
+    backdrop-filter: blur(6px);
+  }
+  .modal[open] {
+    display: grid;
+    place-items: center;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .modal[open] .modal__inner {
+      animation: modal-in 360ms var(--ease-cut) both;
+    }
+  }
+  @keyframes modal-in {
+    from {
+      clip-path: inset(8% 0 8% 0);
+      opacity: 0;
+    }
+  }
+  .modal__inner {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    width: min(100%, var(--modal-w, 1100px));
+  }
+  .modal[data-orient='tall'] .modal__inner {
+    --modal-w: calc((100dvh - 9rem) * 9 / 16 + 2rem);
+  }
+  .modal__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  .modal__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    transition: background-color var(--t-fast), color var(--t-fast);
+  }
+  .modal__close:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .modal__stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    width: 100%;
+  }
+  .modal[data-orient='tall'] .modal__stage {
+    aspect-ratio: 9 / 16;
+    max-height: calc(100dvh - 9rem);
+  }
+  .modal__stage :global(iframe),
+  .modal__stage :global(video) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #000;
+  }
+  .modal__ext {
+    justify-self: start;
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import PlayerModal from '../components/PlayerModal.astro';
+import { site } from '../data/site';
+import { channels } from '../data/channels';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path under /public for the social card, e.g. "/og/home.jpg". */
+  ogImage?: string;
+  /** Extra JSON-LD objects for this page. */
+  jsonLd?: Record<string, unknown>[];
+  /** Preload the page's LCP image (an already-optimised URL). */
+  preloadImage?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = site.seo.title,
+  description = site.seo.description,
+  ogImage = '/og/home.jpg',
+  jsonLd = [],
+  preloadImage,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogUrl = new URL(ogImage, Astro.site).href;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role,
+  url: new URL('/', Astro.site).href,
+  email: `mailto:${site.contact.email}`,
+  knowsAbout: ['Video editing', 'Motion graphics', 'YouTube', 'Podcast editing', 'Short-form video'],
+  sameAs: site.socials.map((s) => s.href).filter(Boolean),
+  workExample: Object.values(channels).map((c) => ({ '@type': 'CreativeWork', name: `Videos for ${c.name}`, url: c.url })),
+};
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="color-scheme" content="dark" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preload" href="/fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin />
+    {preloadImage && <link rel="preload" href={preloadImage} as="image" fetchpriority="high" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} — ${site.role}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify([person, ...jsonLd])} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="progress" aria-hidden="true"></div>
+    <Nav />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <PlayerModal />
+    <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  main:focus {
+    outline: none;
+  }
+
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-cursor);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(-100px, -100px, 0);
+    transition: opacity var(--t-fast) var(--ease-out);
+    will-change: transform;
+  }
+  .cursor.is-on {
+    opacity: 1;
+  }
+  .cursor__label {
+    display: block;
+    translate: 14px 14px;
+    padding: 0.45em 0.8em;
+    border-radius: var(--r-pill);
+    background: var(--volt);
+    color: var(--volt-ink);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    scale: 0.6;
+    transition: scale var(--t) var(--ease-out);
+  }
+  .cursor.is-on .cursor__label {
+    scale: 1;
+  }
+</style>

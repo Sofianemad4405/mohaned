@@ -1,0 +1,23 @@
+import { initAnalytics } from './analytics';
+import { initReveal } from './reveal';
+import { initNav } from './nav';
+import { initHero } from './hero';
+import { initYouTube } from './youtube';
+import { initModal } from './modal';
+import { initLoops } from './loops';
+import { initBeforeAfter } from './beforeAfter';
+import { initCursor } from './cursor';
+import { initRails } from './rail';
+import { initContact } from './contact';
+
+initAnalytics();
+initReveal();
+initNav();
+initHero();
+initYouTube();
+initModal();
+initLoops();
+initBeforeAfter();
+initCursor();
+initRails();
+initContact();
