@@ -1,35 +1,7 @@
 import type { Project } from "./types";
 
-// Curated order: strongest evidence of reach and craft first.
+// Order follows Mohanad's picks (see `picks` below); 3×1 and Shorts come after.
 export const projects: Project[] = [
-  {
-    slug: "3x1-challenge",
-    title: "3×1 Challenge",
-    titleAr: "تحدي ٣ × ١",
-    gloss: "Season 3",
-    channel: "erza3",
-    format: "Football quiz show",
-    summary:
-      "Marwan against two guests, one bell, a live score. Seven Season 3 episodes, 54 minutes to 1-2h ",
-    episodes: [
-      "8zRNRrIoiOk",
-      "ZQ8n4urAA9c",
-      "bUKBuH42ra0",
-      "WMAPTKl3K_I",
-      "PquvNV32UWs",
-      "gb8-jS5FErE",
-      "T9GO7I5T0lE",
-    ],
-    episodeLabels: {
-      "8zRNRrIoiOk": "S3 · Ep 2",
-      ZQ8n4urAA9c: "S3 · Ep 3",
-      bUKBuH42ra0: "S3 · Ep 4",
-      WMAPTKl3K_I: "S3 · Ep 5",
-      PquvNV32UWs: "S3 · Ep 6",
-      "gb8-jS5FErE": "S3 · Ep 7",
-      T9GO7I5T0lE: "S3 · Ep 8",
-    },
-  },
   {
     slug: "world-cup-26",
     title: "Erza3 World Cup 26",
@@ -105,6 +77,34 @@ export const projects: Project[] = [
     episodes: ["Fu3KZOKqtG0"],
   },
   {
+    slug: "3x1-challenge",
+    title: "3×1 Challenge",
+    titleAr: "تحدي ٣ × ١",
+    gloss: "Season 3",
+    channel: "erza3",
+    format: "Football quiz show",
+    summary:
+      "Marwan against two guests, one bell, a live score. Seven Season 3 episodes, 54 minutes to 1-2h ",
+    episodes: [
+      "8zRNRrIoiOk",
+      "ZQ8n4urAA9c",
+      "bUKBuH42ra0",
+      "WMAPTKl3K_I",
+      "PquvNV32UWs",
+      "gb8-jS5FErE",
+      "T9GO7I5T0lE",
+    ],
+    episodeLabels: {
+      "8zRNRrIoiOk": "S3 · Ep 2",
+      ZQ8n4urAA9c: "S3 · Ep 3",
+      bUKBuH42ra0: "S3 · Ep 4",
+      WMAPTKl3K_I: "S3 · Ep 5",
+      PquvNV32UWs: "S3 · Ep 6",
+      "gb8-jS5FErE": "S3 · Ep 7",
+      T9GO7I5T0lE: "S3 · Ep 8",
+    },
+  },
+  {
     slug: "shorts",
     title: "Shorts & Reels",
     gloss: "Vertical",
@@ -147,6 +147,35 @@ export const instagramReel = {
   handle: "omarkhaled23",
   published: "2025-10-04",
   likes: 4923,
+};
+
+/** Mohanad's chosen long-form edits, in his order. Leads the home page and /work/. */
+export const picks: string[] = [
+  "ZHzIuJ2zXyA",
+  "BKy1JT41taw",
+  "J4vew30-r_g",
+  "0aE7sjd6Eac",
+  "8Rf0ikr6dF8",
+  "IfmGSM-uzvo",
+  "Fu3KZOKqtG0",
+];
+
+const labelOf = (id: string) => {
+  const p = projects.find((p) => p.episodes.includes(id))!;
+  return p.episodeLabels?.[id] ?? p.title;
+};
+
+/** The picks as one "project" for the featured player. */
+export const selected: Project = {
+  slug: "selected",
+  title: "Selected edits",
+  gloss: "In his order",
+  channel: "erza3",
+  format: "Shows, podcasts & interviews",
+  summary:
+    "World Cup coverage, a weekly FPL show, a food challenge and a film interview, across three channels.",
+  episodes: picks,
+  episodeLabels: Object.fromEntries(picks.map((id) => [id, labelOf(id)])),
 };
 
 export const getProject = (slug: string) =>

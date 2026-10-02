@@ -9,14 +9,13 @@ import VideoLoop from '../components/VideoLoop.astro';
 import ShortsRail from '../components/ShortsRail.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
-import { projects } from '../data/projects';
+import { projects, selected } from '../data/projects';
 import { motion } from '../data/motion';
 import { mediaUrl } from '../lib/media';
 import { posterUrl } from '../lib/posters';
 import { totals } from '../lib/portfolio';
 import { ARTIFACT } from '../lib/env';
 
-const [lead, ...rest] = projects;
 // The poster is the LCP: one mid-size file, preloaded at high priority.
 const heroPoster = await posterUrl('hero-poster', 960);
 const fullReelPoster = await posterUrl('ba-full-poster', 720);
@@ -25,12 +24,12 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
 <Base preloadImage={heroPoster}>
   <Hero posterSrc={heroPoster} />
 
-  <!-- HOOK: the single biggest piece, playable in place -->
+  <!-- HOOK: Mohanad's picks, playable in place -->
   <section class="section work" id="work" aria-labelledby="work-title">
     <div class="wrap">
-      <SectionHead id="work" tc="00:00:12:00" kicker="Selected work" title={`${totals.videos} videos. <em>Start with the biggest.</em>`}>
+      <SectionHead id="work" tc="00:00:12:00" kicker="Selected work" title={`${totals.videos} videos. <em>Start with these.</em>`}>
       </SectionHead>
-      <Featured project={lead} index={1} />
+      <Featured project={selected} index={1} />
     </div>
   </section>
 
@@ -72,7 +71,7 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
     <div class="wrap">
       <SectionHead id="more" tc="00:02:40:00" kicker="More work" title="Quiz shows, podcasts,<br/><em>interviews, Shorts.</em>" />
       <div class="more__list">
-        {rest.map((p, i) => <ProjectRow project={p} index={i + 2} />)}
+        {projects.map((p, i) => <ProjectRow project={p} index={i + 2} />)}
       </div>
       <p class="more__all">
         <a href="/work/" class="btn">Every edit, one list <span class="arrow" aria-hidden="true">→</span></a>

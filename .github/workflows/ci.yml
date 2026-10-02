@@ -1,7 +1,8 @@
 name: CI
 
 # Type-checks and builds the site on every push to main and every pull request.
-# Deployment itself is done by Vercel (see README).
+# Vercel deploys from Git; its Deployment Checks wait for this job before a
+# production build goes live (see README).
 on:
   push:
     branches: [main]
@@ -17,5 +18,5 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - run: npm run typecheck
       - run: npm run build

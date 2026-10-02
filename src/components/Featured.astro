@@ -3,6 +3,7 @@ import { Picture } from 'astro:assets';
 import { ARTIFACT, pic, ytOut } from '../lib/env';
 import type { Project } from '../data/types';
 import { getVideo, projectStats } from '../lib/portfolio';
+import { channels } from '../data/channels';
 import { thumb } from '../lib/thumbs';
 import { compact, durationWords, monthYear } from '../lib/format';
 import YouTubePlayer from './YouTubePlayer.astro';
@@ -14,27 +15,30 @@ interface Props {
 const { project: p, index } = Astro.props;
 const s = projectStats(p);
 const group = `feat-${p.slug}`;
+// Opens on the first episode in the list, not the most-watched one.
+const first = getVideo(p.episodes[0]);
+const chanNames = [...new Set(p.episodes.map((id) => channels[getVideo(id).channel].name))].join(', ');
 const Ep = ARTIFACT ? 'a' : 'button';
 ---
 
 <article class="feat" aria-labelledby={`feat-${p.slug}`}>
   <div class="feat__player" data-reveal="wipe">
-    <YouTubePlayer id={s.top.id} label={p.episodeLabels?.[s.top.id] ?? p.title} group={group} eager sizes="(min-width: 1100px) 62vw, 100vw" class="ticks" />
+    <YouTubePlayer id={first.id} label={p.episodeLabels?.[first.id] ?? p.title} group={group} eager sizes="(min-width: 1100px) 62vw, 100vw" class="ticks" />
   </div>
 
   <div class="feat__info">
-    <p class="label" data-reveal><span class="volt">0{index} · Most watched</span> <span class="dim">·</span> <span class="muted">{s.channel.name} · {p.format}</span></p>
+    <p class="label" data-reveal><span class="volt">0{index} · {p.gloss}</span> <span class="dim">·</span> <span class="muted">{chanNames}</span></p>
     <h3 class="feat__title display" id={`feat-${p.slug}`} data-reveal style="--i:1">
       {p.title}
-      {p.gloss && <span class="feat__gloss">{p.gloss}</span>}
+      
     </h3>
     {p.titleAr && <p class="feat__ar" lang="ar" dir="rtl" data-reveal style="--i:2">{p.titleAr}</p>}
     <p class="feat__sum" data-reveal style="--i:3">{p.summary}</p>
 
     <dl class="feat__stats" data-reveal style="--i:4">
       <div><dt class="label dim">Views</dt><dd class="display">{compact(s.views)}</dd></div>
-      <div><dt class="label dim">Episodes</dt><dd class="display">{s.count}</dd></div>
-      <div><dt class="label dim">Top episode</dt><dd class="display volt">{compact(s.top.views)}</dd></div>
+      <div><dt class="label dim">Videos</dt><dd class="display">{s.count}</dd></div>
+      <div><dt class="label dim">Top video</dt><dd class="display volt">{compact(s.top.views)}</dd></div>
     </dl>
 
     <div class="feat__eps" data-reveal style="--i:5">
@@ -50,7 +54,7 @@ const Ep = ARTIFACT ? 'a' : 'button';
                   class="feat__ep"
                   {...(ARTIFACT
                     ? ytOut(id, v.kind)
-                    : { type: 'button' as const, 'data-yt-switch': group, 'data-yt-id': id, 'aria-pressed': id === s.top.id ? 'true' : 'false' })}
+                    : { type: 'button' as const, 'data-yt-switch': group, 'data-yt-id': id, 'aria-pressed': id === first.id ? 'true' : 'false' })}
                 >
                   <span class="visually-hidden">Play {label} — {compact(v.views)} views, {durationWords(v.durationSec)}, {monthYear(v.published)}</span>
                   <Picture src={thumb(id)} {...pic([240, 360])} sizes="120px" alt="" loading="lazy" />
@@ -81,13 +85,6 @@ const Ep = ARTIFACT ? 'a' : 'button';
   .feat__title {
     font-size: clamp(2.75rem, 5.5vw, 5.25rem);
     font-stretch: 66%;
-  }
-  .feat__gloss {
-    display: block;
-    font-size: 0.42em;
-    font-stretch: 80%;
-    color: var(--muted);
-    margin-top: 0.25em;
   }
   .feat__ar {
     font-size: clamp(1.25rem, 2vw, 1.6rem);

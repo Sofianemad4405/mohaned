@@ -10,7 +10,14 @@ npm run preview
 npm run check      # type-check
 ```
 
-Set `SITE_URL` before a production build (see `.env.example`). Deploy `dist/` to any static host (Cloudflare Pages, Netlify, Vercel). Use a host that serves gzip/brotli, because the HTML carries the inlined CSS.
+## Deploy (Vercel)
+
+Live at https://mohanad-gamal.vercel.app/. Vercel's GitHub integration builds every push: `main` goes to production, other branches and pull requests get preview URLs.
+
+- **CI:** `.github/workflows/ci.yml` runs `npm run typecheck` and `npm run build` on every push and pull request.
+- **Gate:** under Vercel → Settings → Build and Deployment → Deployment Checks, the `CI / build` GitHub check is required, so a production deploy only goes live once CI passes.
+- **Site URL:** on Vercel the canonical/OG/sitemap URL comes from the project's production domain automatically. Set `SITE_URL` to override it (e.g. after adding a custom domain).
+- **Rollback:** Vercel → Deployments → pick an earlier one → Instant Rollback.
 
 ## Where things live
 

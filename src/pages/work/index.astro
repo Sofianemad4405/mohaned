@@ -2,7 +2,7 @@
 import { Picture } from 'astro:assets';
 import { ARTIFACT, pic, ytOut } from '../../lib/env';
 import Base from '../../layouts/Base.astro';
-import { projects, instagramReel } from '../../data/projects';
+import { projects, picks, instagramReel } from '../../data/projects';
 import { site } from '../../data/site';
 import { STATS_SNAPSHOT_DATE } from '../../data/videos';
 import { getVideo, totals } from '../../lib/portfolio';
@@ -19,6 +19,8 @@ const cats: { id: Cat | 'all'; label: string }[] = [
   { id: 'short', label: 'Shorts' },
 ];
 
+const rank = (id: string) => (picks.includes(id) ? picks.indexOf(id) : picks.length);
+
 const items = projects
   .flatMap((p) =>
     p.episodes.map((id) => {
@@ -29,18 +31,19 @@ const items = projects
       return { v, p, label, cat };
     }),
   )
-  .sort((a, b) => b.v.views - a.v.views);
+  // Mohanad's picks first, in his order; everything else keeps project order.
+  .sort((a, b) => rank(a.v.id) - rank(b.v.id));
 
 const count = (c: Cat | 'all') => (c === 'all' ? items.length + 1 : items.filter((i) => i.cat === c).length + (c === 'short' ? 1 : 0));
 ---
 
 <Base
   title={`All work — ${site.name}, ${site.role}`}
-  description={`Every edit in one list: ${totals.videos} YouTube videos and an Instagram reel, ${compact(totals.views)} public views, sorted by reach.`}
+  description={`Every edit in one list: ${totals.videos} YouTube videos and an Instagram reel, ${compact(totals.views)} public views.`}
 >
   <section class="wrap arch">
     <header class="arch__head">
-      <p class="label"><span class="volt">Index</span> <span class="dim">·</span> <span class="muted">Sorted by views</span></p>
+      <p class="label"><span class="volt">Index</span> <span class="dim">·</span> <span class="muted">His picks first</span></p>
       <h1 class="display arch__title">Every edit,<br /><span class="volt">one list.</span></h1>
       <p class="lead muted">
         {totals.videos} YouTube videos and one Instagram reel. {compact(totals.views)} public views as of {longDate(STATS_SNAPSHOT_DATE)}.
