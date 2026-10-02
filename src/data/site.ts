@@ -26,7 +26,9 @@ export const site = {
   },
 
   // Only Instagram, per Mohanad.
-  socials: [{ label: "Instagram", href: "https://www.instagram.com/mohandgamal23/" }] as {
+  socials: [
+    { label: "Instagram", href: "https://www.instagram.com/mohandgamal23/" },
+  ] as {
     label: string;
     href: string;
   }[],
@@ -36,9 +38,21 @@ export const site = {
     name: "Sofian Emad",
     role: "Mobile developer",
     links: [
-      { kind: "whatsapp", label: "WhatsApp", href: "https://wa.me/201002792637?text=" + encodeURIComponent("Hi Sofian, I saw Mohanad Gamal’s portfolio and want to talk about a project.") },
+      {
+        kind: "whatsapp",
+        label: "WhatsApp",
+        href:
+          "https://wa.me/201002792637?text=" +
+          encodeURIComponent(
+            "Hi Sofian, I saw Mohanad Gamal’s portfolio and want to talk about a project.",
+          ),
+      },
       { kind: "x", label: "X (Twitter)", href: "https://x.com/Bojjaan_Krikc" },
-      { kind: "instagram", label: "Instagram", href: "https://www.instagram.com/sofian_44/" },
+      {
+        kind: "instagram",
+        label: "Instagram",
+        href: "https://www.instagram.com/sofiaan_44/",
+      },
     ],
   },
 
