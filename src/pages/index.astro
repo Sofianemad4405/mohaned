@@ -9,7 +9,7 @@ import VideoLoop from '../components/VideoLoop.astro';
 import ShortsRail from '../components/ShortsRail.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
-import { projects, selected } from '../data/projects';
+import { projects, featured } from '../data/projects';
 import { motion } from '../data/motion';
 import { mediaUrl } from '../lib/media';
 import { posterUrl } from '../lib/posters';
@@ -27,9 +27,9 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
   <!-- HOOK: Mohanad's picks, playable in place -->
   <section class="section work" id="work" aria-labelledby="work-title">
     <div class="wrap">
-      <SectionHead id="work" tc="00:00:12:00" kicker="Selected work" title={`${totals.videos} videos. <em>Start with these.</em>`}>
+      <SectionHead id="work" tc="00:00:12:00" kicker="Featured work" title={`${totals.videos} videos. <em>Start with these.</em>`}>
       </SectionHead>
-      <Featured project={selected} index={1} />
+      <Featured project={featured} index={1} />
     </div>
   </section>
 

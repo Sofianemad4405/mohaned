@@ -6,7 +6,7 @@ export const services: Service[] = [
     title: "Video editing",
     body: "Long-form shows, podcasts up to three hours, interviews and vertical Shorts.",
     evidence: [
-      { label: "Selected work", href: "/#work" },
+      { label: "Featured work", href: "/#work" },
       { label: "Every edit", href: "/work/" },
     ],
   },

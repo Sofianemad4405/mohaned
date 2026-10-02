@@ -166,10 +166,10 @@ const labelOf = (id: string) => {
 };
 
 /** The picks as one "project" for the featured player. */
-export const selected: Project = {
-  slug: "selected",
-  title: "Selected edits",
-  gloss: "In his order",
+export const featured: Project = {
+  slug: "featured",
+  title: "Football, food & film",
+  gloss: "Featured",
   channel: "erza3",
   format: "Shows, podcasts & interviews",
   summary:
