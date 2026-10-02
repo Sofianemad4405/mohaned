@@ -17,6 +17,9 @@ import indrive from '../assets/brands/indrive.svg';
 import gea from '../assets/brands/gea.svg';
 import btech from '../assets/brands/btech.png';
 import palmhills from '../assets/brands/palmhills.svg';
+import fury from '../assets/brands/fury.svg';
+import owest from '../assets/brands/owest.svg';
+import tornado from '../assets/brands/tornado.svg';
 
 export interface Brand {
   name: string;
@@ -26,27 +29,27 @@ export interface Brand {
   h?: number;
 }
 
-// Mohand's list, biggest names first.
+// Mohanad's list, shown A–Z.
 export const brands: Brand[] = [
-  { name: 'FIFA World Cup Qatar 2022', logo: fifa22, h: 40 },
-  { name: 'Google', logo: google, h: 36 },
-  { name: 'Samsung', logo: samsung, h: 28 },
   { name: 'adidas', logo: adidas, h: 46 },
-  { name: 'Red Bull', logo: redbull, h: 34 },
-  { name: 'YouTube', logo: youtube, h: 30 },
-  { name: 'Gemini', logo: gemini, h: 30 },
-  { name: 'Gillette', logo: gillette, h: 30 },
-  { name: 'Lenovo', logo: lenovo, h: 30 },
-  { name: 'OPPO', logo: oppo, h: 28 },
-  { name: 'Rexona', logo: rexona, h: 50 },
+  { name: 'B.TECH', logo: btech, h: 50 },
   { name: 'Clear', logo: clear, h: 30 },
   { name: 'Emaar', logo: emaar, h: 28 },
-  { name: 'talabat', logo: talabat, h: 32 },
-  { name: 'inDrive', logo: indrive, h: 34 },
+  { name: 'FIFA World Cup Qatar 2022', logo: fifa22, h: 40 },
+  { name: 'Fury', logo: fury, h: 66 },
+  { name: 'Gemini', logo: gemini, h: 30 },
   { name: 'General Entertainment Authority', logo: gea, h: 56 },
-  { name: 'B.TECH', logo: btech, h: 50 },
+  { name: 'Gillette', logo: gillette, h: 30 },
+  { name: 'Google', logo: google, h: 36 },
+  { name: 'inDrive', logo: indrive, h: 34 },
+  { name: 'Lenovo', logo: lenovo, h: 30 },
+  { name: 'O West', logo: owest, h: 58 },
+  { name: 'OPPO', logo: oppo, h: 28 },
   { name: 'Palm Hills', logo: palmhills, h: 40 },
-  { name: 'O West' },
-  { name: 'Tornado' },
-  { name: 'Fury' },
-];
+  { name: 'Red Bull', logo: redbull, h: 34 },
+  { name: 'Rexona', logo: rexona, h: 50 },
+  { name: 'Samsung', logo: samsung, h: 28 },
+  { name: 'talabat', logo: talabat, h: 32 },
+  { name: 'Tornado', logo: tornado, h: 26 },
+  { name: 'YouTube', logo: youtube, h: 30 },
+].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));

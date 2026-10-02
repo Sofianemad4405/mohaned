@@ -2,9 +2,10 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// Set SITE_URL to the production domain before deploying (used for canonical
-// URLs, Open Graph and the sitemap).
-const site = process.env.SITE_URL || 'https://example.com';
+// Production URL for canonical links, Open Graph and the sitemap. SITE_URL wins;
+// on Vercel it falls back to the project's production domain.
+const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+const site = process.env.SITE_URL || (vercel ? `https://${vercel}` : 'https://example.com');
 
 export default defineConfig({
   site,

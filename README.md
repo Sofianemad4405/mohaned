@@ -1,4 +1,4 @@
-# Mohaned Gamal: video editor portfolio
+# Mohanad Gamal: video editor portfolio
 
 Static Astro site. No framework runtime: about 14 KB of vanilla JS in total, CSS inlined, and every image optimised to AVIF/WebP at build time.
 
@@ -14,16 +14,16 @@ Set `SITE_URL` before a production build (see `.env.example`). Deploy `dist/` to
 
 ## Where things live
 
-| Change… | Edit |
-|---|---|
-| Name, title, bio, contact, Instagram, showreel, SEO copy | `src/data/site.ts` |
-| Brand logos | `src/data/brands.ts` + `src/assets/brands/` |
-| Projects, episode order, labels | `src/data/projects.ts` |
-| Video titles and view counts (generated snapshot) | `src/data/videos.ts` |
-| Channels and subscriber counts | `src/data/channels.ts` |
-| Motion clips | `src/data/motion.ts` |
-| Services | `src/data/services.ts` |
-| Colours, type scale, spacing, motion timings | `src/styles/global.css` (`:root` tokens) |
+| Change…                                                  | Edit                                        |
+| -------------------------------------------------------- | ------------------------------------------- |
+| Name, title, bio, contact, Instagram, showreel, SEO copy | `src/data/site.ts`                          |
+| Brand logos                                              | `src/data/brands.ts` + `src/assets/brands/` |
+| Projects, episode order, labels                          | `src/data/projects.ts`                      |
+| Video titles and view counts (generated snapshot)        | `src/data/videos.ts`                        |
+| Channels and subscriber counts                           | `src/data/channels.ts`                      |
+| Motion clips                                             | `src/data/motion.ts`                        |
+| Services                                                 | `src/data/services.ts`                      |
+| Colours, type scale, spacing, motion timings             | `src/styles/global.css` (`:root` tokens)    |
 
 **Placeholders.** Copy written as `[LIKE THIS]` is hidden while `showPlaceholders` is `false` in `site.ts`. Set it to `true` to see what's still missing. The list is in `MISSING_INFORMATION.md`.
 

@@ -115,7 +115,7 @@ for line in (ROOT / 'raw/yt-metadata-2026-09-30.txt').read_text().splitlines():
 total = sum(meta.values())
 fmt = lambda n: f'{n/1e6:.1f}M' if n >= 1e6 else f'{round(n/1e3)}K'
 
-card(['T9GO7I5T0lE'], ['Mohaned', 'Gamal'], 'Senior Video Editor · Arcade Films · Cairo',
+card(['T9GO7I5T0lE'], ['Mohanad', 'Gamal'], 'Senior Video Editor · Arcade Films · Cairo',
      f'{fmt(total)} public views across {len(meta)} edits', PUB / 'og/home.jpg')
 
 print('done')

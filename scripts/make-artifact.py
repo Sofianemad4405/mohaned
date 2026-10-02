@@ -81,7 +81,7 @@ for f in SRC.rglob('*'):
             html = re.sub(r'<!DOCTYPE html>|</?html[^>]*>|</?head>|</?body>', '', html, flags=re.I)
             html = re.sub(r'<meta charset="utf-8">|<meta name="viewport"[^>]*>', '', html)
             # The viewer shows this as the artifact's name: a name, not a caption.
-            html = html.replace('<title>Mohaned Gamal — Video Editor</title>', '<title>Mohaned Gamal Portfolio</title>', 1)
+            html = re.sub(r'<title>[^<]*</title>', '<title>Mohanad Gamal Portfolio</title>', html, count=1)
         dest.write_text(html)
     else:
         shutil.copy2(f, dest)
