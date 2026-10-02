@@ -305,7 +305,7 @@ import SectionHead from './SectionHead.astro';
       grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 760px) {
+  @media (max-width: 900px) {
     .services__list {
       grid-template-columns: 1fr;
     }
@@ -313,6 +313,30 @@ import SectionHead from './SectionHead.astro';
       padding-left: 0;
       border-left: 0;
     }
+  }
+  /* Tablets: each service is one row, name on the left, detail on the right */
+  @media (min-width: 601px) and (max-width: 900px) {
+    .svc {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+      column-gap: var(--s-6);
+      padding-right: 0;
+    }
+    .svc__n,
+    .svc__t {
+      grid-column: 1;
+    }
+    .svc__b {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: end;
+      max-width: none;
+    }
+    .svc__e {
+      grid-column: 2;
+      margin-top: 0;
+    }
+  }
+  @media (max-width: 760px) {
     .brands__board {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

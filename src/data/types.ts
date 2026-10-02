@@ -28,6 +28,8 @@ export interface Project {
   slug: string;
   title: string;
   titleAr?: string;
+  /** What Mohanad did on it, e.g. ["Editing", "Color grading"]. */
+  roles?: string[];
   /** Short English gloss of the Arabic show name. */
   gloss?: string;
   channel: ChannelKey;

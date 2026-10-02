@@ -5,7 +5,8 @@ export const projects: Project[] = [
   {
     slug: "world-cup-26",
     title: "Erza3 World Cup 26",
-    titleAr: "رزع المونديال- Editing , color grading , motion graphics",
+    titleAr: "رزع المونديال",
+    roles: ["Editing", "Color grading", "Motion graphics"],
     gloss: "Tournament coverage",
     channel: "erza3",
     format: "Podcast & tournament coverage",
@@ -35,8 +36,8 @@ export const projects: Project[] = [
   {
     slug: "fpl-weekly",
     title: "Who to Bring In, Who to Let Go",
-    titleAr:
-      "مين تجيبه و مين تسيبه - Editing , color grading , motion graphics",
+    titleAr: "مين تجيبه و مين تسيبه",
+    roles: ["Editing", "Color grading", "Motion graphics"],
     gloss: "Weekly Fantasy Premier League show",
     channel: "erza3",
     format: "Weekly FPL show",
@@ -53,7 +54,8 @@ export const projects: Project[] = [
   {
     slug: "marwan-serry",
     title: "Marwan Serry",
-    titleAr: "مروان سري - Editing color grade",
+    titleAr: "مروان سري",
+    roles: ["Editing", "Color grading"],
     gloss: "Personal channel",
     channel: "marwanSerry",
     format: "Challenge & personal episodes",
@@ -68,7 +70,7 @@ export const projects: Project[] = [
   {
     slug: "seven-dogs-interview",
     title: "Seven Dogs — Cast Interview",
-    titleAr: "Seven Dogs Film - Editing , color grading , motion graphics",
+    roles: ["Editing", "Color grading", "Motion graphics"],
     gloss: "Exclusive film interview",
     channel: "beta3Aflam",
     format: "Film interview",

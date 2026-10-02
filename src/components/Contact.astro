@@ -171,6 +171,9 @@ const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5
     background: var(--ink-2);
     border: 1px solid var(--line);
   }
+  .form {
+    container-type: inline-size;
+  }
   .form__row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -286,10 +289,12 @@ const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5
       grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 520px) {
+  @container (max-width: 30rem) {
     .form__row {
       grid-template-columns: 1fr;
     }
+  }
+  @media (max-width: 520px) {
     .contact__ways li {
       grid-template-columns: 1fr;
       gap: var(--s-1);

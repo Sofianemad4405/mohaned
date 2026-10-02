@@ -27,6 +27,11 @@ const runtime =
       <p class="label muted">{s.channel.name} · {p.format}</p>
       <h3 class="row__title display" id={`row-${p.slug}`}>{p.title}</h3>
       {p.titleAr && <p class="row__ar" lang="ar" dir="rtl">{p.titleAr}</p>}
+      {p.roles && (
+        <ul role="list" class="row__roles" aria-label="Role">
+          {p.roles.map((r) => <li class="label">{r}</li>)}
+        </ul>
+      )}
       <p class="row__sum">{p.summary}</p>
       <p class="row__more label">
         <span>{s.count === 1 ? 'Watch on YouTube' : `Watch the top episode · ${compact(s.top.views)} views`}</span> <span class="arrow" aria-hidden="true">↗</span>
@@ -105,6 +110,17 @@ const runtime =
     font-weight: 800;
     color: var(--muted);
     text-align: left;
+  }
+  .row__roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .row__roles li {
+    padding: 0.3em 0.65em;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    color: var(--paper);
   }
   .row__sum {
     color: var(--muted);
