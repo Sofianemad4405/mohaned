@@ -115,25 +115,10 @@ for line in (ROOT / 'raw/yt-metadata-2026-09-30.txt').read_text().splitlines():
 total = sum(meta.values())
 fmt = lambda n: f'{n/1e6:.1f}M' if n >= 1e6 else f'{round(n/1e3)}K'
 
-card(['T9GO7I5T0lE'], ['Mohaned', 'Gamal'], 'Video editor · Football & creator YouTube',
+card(['T9GO7I5T0lE'], ['Mohaned', 'Gamal'], 'Senior Video Editor · Arcade Films · Cairo',
      f'{fmt(total)} public views across {len(meta)} edits', PUB / 'og/home.jpg')
 
-src = (ROOT / 'src/data/projects.ts').read_text()
-blocks = re.findall(r"slug: '([^']+)',\s*title: '([^']+)'.*?episodes: \[([^\]]+)\]", src, re.S)
-for slug, title, eps in blocks:
-    ids = re.findall(r"'([^']+)'", eps)
-    views = sum(meta.get(i, 0) for i in ids)
-    top = sorted(ids, key=lambda i: -meta.get(i, 0))
-    words = title.replace('—', '').split()
-    lines, cur = [], ''
-    for w_ in words:
-        if len(cur + ' ' + w_) > 14 and cur: lines.append(cur); cur = w_
-        else: cur = (cur + ' ' + w_).strip()
-    lines.append(cur)
-    card(top, lines[:3], 'Case study · Mohaned Gamal',
-         f'{len(ids)} video{"s" if len(ids) > 1 else ""}  ·  {fmt(views)} public views', PUB / f'og/{slug}.jpg',
-         tall=slug == 'shorts')
-print('done', [b[0] for b in blocks])
+print('done')
 
 # Fonts in /public/fonts are subsets of the @fontsource-variable packages:
 #   pyftsubset <archivo-latin-wdth-normal.woff2|jetbrains-mono-latin-wght-normal.woff2> \

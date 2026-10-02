@@ -5,6 +5,9 @@ import { totals } from '../lib/portfolio';
 import { compact, longDate } from '../lib/format';
 import { mediaUrl } from '../lib/media';
 import Text from './Text.astro';
+import { Picture } from 'astro:assets';
+import { pic } from '../lib/env';
+import { poster } from '../lib/posters';
 
 interface Props {
   posterSrc: string;
@@ -24,10 +27,10 @@ const stats = [
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero__grid">
     <p class="hero__slate label">
-      <span class="rec-dot" aria-hidden="true"></span>
-      <span>{site.role}</span>
+      <Picture src={poster('mohaned-portrait')} {...pic([96])} sizes="40px" alt="" loading="eager" class="hero__avatar" />
+      <span>{site.position.title} · {site.position.company}</span>
       <span class="dim" aria-hidden="true">/</span>
-      <span class="muted">{site.specialisation}</span>
+      <span class="muted">{site.role}</span>
     </p>
 
     <h1 class="hero__name display" id="hero-title">
@@ -121,6 +124,15 @@ const stats = [
     flex-wrap: wrap;
     gap: 0.6em;
     margin-bottom: var(--s-4);
+  }
+  .hero__slate :global(.hero__avatar) {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 30%;
+    box-shadow: 0 0 0 2px var(--ink), 0 0 0 3px var(--volt);
+    margin-right: 0.35em;
   }
   .hero__name {
     grid-column: 1 / -1;

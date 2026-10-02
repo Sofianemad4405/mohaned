@@ -1,5 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
+import { ARTIFACT, pic, ytOut } from '../lib/env';
 import { getProject, instagramReel } from '../data/projects';
 import { getVideo } from '../lib/portfolio';
 import { thumb } from '../lib/thumbs';
@@ -10,6 +11,7 @@ interface Props {
 }
 const { withReel = true } = Astro.props;
 const shorts = getProject('shorts')!;
+const Card = ARTIFACT ? 'a' : 'button';
 const items = [...shorts.episodes].map(getVideo).sort((a, b) => b.views - a.views);
 ---
 
@@ -20,23 +22,21 @@ const items = [...shorts.episodes].map(getVideo).sort((a, b) => b.views - a.view
         const label = shorts.episodeLabels?.[v.id] ?? '';
         return (
           <li class="rail__item">
-            <button
-              type="button"
+            <Card
               class="rail__card"
-              data-modal-yt={v.id}
-              data-modal-orient="tall"
-              data-modal-label={label}
-              data-cursor="Play"
+              {...(ARTIFACT
+                ? ytOut(v.id, 'short')
+                : { type: 'button' as const, 'data-modal-yt': v.id, 'data-modal-orient': 'tall', 'data-modal-label': label, 'data-cursor': 'Play' })}
               data-track="video_play"
               data-track-where={v.id}
             >
               <span class="visually-hidden">Play Short: {label} — {compact(v.views)} views</span>
               <span class="rail__media">
-                <Picture src={thumb(v.id, 'tall')} widths={[240, 360, 480]} sizes="(min-width: 900px) 15rem, 55vw" formats={['avif', 'webp']} alt="" loading="lazy" />
+                <Picture src={thumb(v.id, 'tall')} {...pic([240, 360, 480])} sizes="(min-width: 900px) 15rem, 55vw" alt="" loading="lazy" />
                 <span class="rail__views label" aria-hidden="true">{compact(v.views)} views</span>
                 <span class="rail__dur label" aria-hidden="true">{duration(v.durationSec)}</span>
               </span>
-            </button>
+            </Card>
             <p class="rail__label label">{label}</p>
             <p class="rail__ar" lang="ar" dir="rtl">{v.title}</p>
           </li>
@@ -49,7 +49,7 @@ const items = [...shorts.episodes].map(getVideo).sort((a, b) => b.views - a.view
           <a class="rail__card" href={instagramReel.url} target="_blank" rel="noopener" data-cursor="Open" data-track="video_external" data-track-where="instagram">
             <span class="visually-hidden">Instagram reel for {instagramReel.creator} — opens Instagram</span>
             <span class="rail__media">
-              <Picture src={thumb(instagramReel.id, 'tall')} widths={[240, 360, 480]} sizes="(min-width: 900px) 15rem, 55vw" formats={['avif', 'webp']} alt="" loading="lazy" />
+              <Picture src={thumb(instagramReel.id, 'tall')} {...pic([240, 360, 480])} sizes="(min-width: 900px) 15rem, 55vw" alt="" loading="lazy" />
               <span class="rail__views label" aria-hidden="true">Instagram ↗</span>
             </span>
           </a>

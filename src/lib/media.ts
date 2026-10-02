@@ -15,3 +15,9 @@ export const youtube = {
   embed: (id: string) =>
     `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`,
 };
+
+/** Gmail's compose screen addressed to `to` (optionally with subject and body). */
+export const gmailCompose = (to: string, subject = '', body = '') =>
+  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}` +
+  (subject ? `&su=${encodeURIComponent(subject)}` : '') +
+  (body ? `&body=${encodeURIComponent(body)}` : '');

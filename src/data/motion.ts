@@ -33,5 +33,3 @@ export const motion: MotionPiece[] = [
     durationSec: 2.2,
   },
 ];
-
-export const getMotion = (slug: string) => motion.find((m) => m.slug === slug);

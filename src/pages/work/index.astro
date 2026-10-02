@@ -1,5 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
+import { ARTIFACT, pic, ytOut } from '../../lib/env';
 import Base from '../../layouts/Base.astro';
 import { projects, instagramReel } from '../../data/projects';
 import { site } from '../../data/site';
@@ -8,6 +9,7 @@ import { getVideo, totals } from '../../lib/portfolio';
 import { thumb } from '../../lib/thumbs';
 import { compact, duration, longDate } from '../../lib/format';
 
+const Play = ARTIFACT ? 'a' : 'button';
 type Cat = 'show' | 'podcast' | 'interview' | 'short';
 const cats: { id: Cat | 'all'; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -60,29 +62,31 @@ const count = (c: Cat | 'all') => (c === 'all' ? items.length + 1 : items.filter
       {
         items.map(({ v, p, label, cat }) => (
           <li class="card" data-cat={cat}>
-            <button
-              type="button"
+            <Play
               class="card__play"
-              data-modal-yt={v.id}
-              data-modal-orient={v.kind === 'short' ? 'tall' : 'wide'}
-              data-modal-label={`${p.title} · ${label}`}
-              data-cursor="Play"
+              {...(ARTIFACT
+                ? ytOut(v.id, v.kind)
+                : {
+                    type: 'button' as const,
+                    'data-modal-yt': v.id,
+                    'data-modal-orient': v.kind === 'short' ? 'tall' : 'wide',
+                    'data-modal-label': `${p.title} · ${label}`,
+                    'data-cursor': 'Play',
+                  })}
             >
               <span class="visually-hidden">Play {label} ({p.title}) — {compact(v.views)} views</span>
               <span class:list={['card__media', { 'card__media--tall': v.kind === 'short' }]}>
                 {v.kind === 'short' ? (
-                  <Picture src={thumb(v.id, 'tall')} widths={[240, 360]} sizes="12rem" formats={['avif', 'webp']} alt="" loading="lazy" />
+                  <Picture src={thumb(v.id, 'tall')} {...pic([240, 360])} sizes="12rem" alt="" loading="lazy" />
                 ) : (
-                  <Picture src={thumb(v.id)} widths={[400, 640]} sizes="(min-width: 1200px) 25vw, (min-width: 700px) 45vw, 100vw" formats={['avif', 'webp']} alt="" loading="lazy" />
+                  <Picture src={thumb(v.id)} {...pic([400, 640])} sizes="(min-width: 1200px) 25vw, (min-width: 700px) 45vw, 100vw" alt="" loading="lazy" />
                 )}
                 <span class="card__views label" aria-hidden="true">{compact(v.views)}</span>
                 <span class="card__dur label" aria-hidden="true">{duration(v.durationSec)}</span>
               </span>
-            </button>
+            </Play>
             <div class="card__info">
-              <p class="label">
-                <a class="link" href={`/work/${p.slug}/`}>{p.title}</a>
-              </p>
+              <p class="label muted">{p.title}</p>
               <p class="card__label">{label}</p>
               <p class="card__ar" lang="ar" dir="rtl">{v.title}</p>
               <p class="label dim">{longDate(v.published)}</p>
@@ -94,7 +98,7 @@ const count = (c: Cat | 'all') => (c === 'all' ? items.length + 1 : items.filter
         <a class="card__play" href={instagramReel.url} target="_blank" rel="noopener" data-cursor="Open">
           <span class="visually-hidden">Instagram reel for {instagramReel.creator} — opens Instagram</span>
           <span class="card__media card__media--tall">
-            <Picture src={thumb(instagramReel.id, 'tall')} widths={[240, 360]} sizes="12rem" formats={['avif', 'webp']} alt="" loading="lazy" />
+            <Picture src={thumb(instagramReel.id, 'tall')} {...pic([240, 360])} sizes="12rem" alt="" loading="lazy" />
             <span class="card__views label" aria-hidden="true">Instagram ↗</span>
           </span>
         </a>
@@ -148,7 +152,7 @@ const count = (c: Cat | 'all') => (c === 'all' ? items.length + 1 : items.filter
   }
   .filters {
     position: sticky;
-    top: 4.25rem;
+    top: calc(4.25rem + env(safe-area-inset-top, 0px));
     z-index: var(--z-sticky);
     display: flex;
     gap: var(--s-2);

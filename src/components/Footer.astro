@@ -1,8 +1,8 @@
 ---
 import { site } from '../data/site';
+import { gmailCompose } from '../lib/media';
 import { longDate } from '../lib/format';
 import { STATS_SNAPSHOT_DATE } from '../data/videos';
-import Text from './Text.astro';
 
 const year = new Date().getFullYear();
 ---
@@ -11,8 +11,8 @@ const year = new Date().getFullYear();
   <div class="wrap foot__grid">
     <div class="foot__id">
       <p class="display foot__name">{site.name}</p>
-      <p class="label muted">{site.role} · {site.specialisation}</p>
-      <Text value={site.location} as="p" class="label muted" />
+      <p class="label muted">{site.position.title} · {site.position.company}</p>
+      <p class="label muted">{site.location}</p>
     </div>
 
     <nav class="foot__col" aria-label="Footer">
@@ -29,19 +29,17 @@ const year = new Date().getFullYear();
     <div class="foot__col">
       <p class="label dim">Contact</p>
       <ul role="list">
-        <li><a class="link" href={`mailto:${site.contact.email}`} data-track="cta_email" data-track-where="footer">{site.contact.email}</a></li>
+        <li><a class="link" href={gmailCompose(site.contact.email)} target="_blank" rel="noopener" data-track="cta_email" data-track-where="footer">{site.contact.email}</a></li>
         {
-          site.socials.map((s) =>
-            s.href ? (
+          site.socials
+            .filter((s) => s.href)
+            .map((s) => (
               <li>
                 <a class="link" href={s.href} rel="me noopener" target="_blank" data-track="social" data-track-where={s.label}>
                   {s.label} ↗
                 </a>
               </li>
-            ) : (
-              <Text value={s.placeholder} as="li" />
-            ),
-          )
+            ))
         }
       </ul>
     </div>

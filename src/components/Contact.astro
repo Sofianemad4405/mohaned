@@ -1,10 +1,10 @@
 ---
 import { site } from '../data/site';
-import Text from './Text.astro';
+import { gmailCompose } from '../lib/media';
 
 const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
-const projectTypes = ['Long-form show', 'Podcast', 'Shorts / Reels', 'Interview', 'Motion graphics', 'Full-time role', 'Something else'];
-const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5,000', '$5,000+', 'Salaried role'];
+const projectTypes = ['Long-form show', 'Podcast', 'Shorts / Reels', 'Interview', 'Color grading', 'Motion graphics', 'Something else'];
+const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5,000', '$5,000+'];
 ---
 
 <section class="section contact" id="contact" aria-labelledby="contact-title">
@@ -15,47 +15,41 @@ const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5
         Send me the <span class="volt">footage.</span>
       </h2>
       <p class="lead muted" data-reveal style="--i:2">
-        A weekly show, a podcast that needs Shorts, or a seat on your team — tell me what you’re making and when it needs to go out.
+        A weekly show, a podcast that needs Shorts, a grade or a graphics package — tell me what you’re making and when it needs to go out.
       </p>
 
       <ul role="list" class="contact__ways" data-reveal style="--i:3">
         <li>
           <span class="label dim">Email</span>
           <span class="contact__mail">
-            <a href={`mailto:${site.contact.email}`} class="link" data-track="cta_email" data-track-where="contact">{site.contact.email}</a>
+            <a href={gmailCompose(site.contact.email)} target="_blank" rel="noopener" class="link" data-track="cta_email" data-track-where="contact">{site.contact.email}</a>
             <button type="button" class="contact__copy label" data-copy={site.contact.email}>Copy</button>
           </span>
         </li>
-        <li>
-          <span class="label dim">WhatsApp</span>
-          {
-            site.contact.whatsapp ? (
-              <a class="link" href={`https://wa.me/${site.contact.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener" data-track="cta_whatsapp">
-                {site.contact.whatsapp}
-              </a>
-            ) : (
-              <Text value={site.contact.whatsappPlaceholder} />
-            )
-          }
-        </li>
         {
-          site.socials.map((s) => (
-            <li>
-              <span class="label dim">{s.label}</span>
-              {s.href ? (
+          site.socials
+            .filter((s) => s.href)
+            .map((s) => (
+              <li>
+                <span class="label dim">{s.label}</span>
                 <a class="link" href={s.href} target="_blank" rel="me noopener" data-track="social" data-track-where={s.label}>
-                  {s.href.replace(/^https?:\/\/(www\.)?/, '')}
+                  {s.href.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
                 </a>
-              ) : (
-                <Text value={s.placeholder} />
-              )}
-            </li>
-          ))
+              </li>
+            ))
         }
+        <li>
+          <span class="label dim">Based in</span>
+          <span>{site.location}</span>
+        </li>
+        <li>
+          <span class="label dim">Status</span>
+          <span class="volt">{site.availability}</span>
+        </li>
       </ul>
     </div>
 
-    <form class="form" data-contact-form data-endpoint={endpoint} data-email={site.contact.email} novalidate data-reveal style="--i:2">
+    <form class="form" data-contact-form data-endpoint={endpoint} data-mode={endpoint ? 'post' : 'gmail'} data-email={site.contact.email} novalidate data-reveal style="--i:2">
       <div class="form__row">
         <div class="field">
           <label for="cf-name">Name <span class="req" aria-hidden="true">*</span></label>
@@ -107,7 +101,7 @@ const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5
           <span data-submit-label>Send brief</span> <span class="arrow" aria-hidden="true">→</span>
         </button>
         <p class="form__hint label dim">
-          {endpoint ? 'Goes straight to my inbox.' : 'Opens your email app with everything filled in.'}
+          {endpoint ? 'Goes straight to my inbox.' : 'Opens Gmail with everything filled in. Just press Send.'}
         </p>
       </div>
       <p class="form__status" role="status" aria-live="polite" data-status></p>

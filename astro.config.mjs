@@ -8,6 +8,8 @@ const site = process.env.SITE_URL || 'https://example.com';
 
 export default defineConfig({
   site,
+  // The artifact build (PUBLIC_ARTIFACT=1) goes to its own folder; see scripts/make-artifact.py
+  outDir: process.env.PUBLIC_ARTIFACT === '1' ? './dist-artifact' : './dist',
   trailingSlash: 'always',
   integrations: [sitemap()],
   build: { inlineStylesheets: 'always' },

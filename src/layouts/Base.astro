@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import PlayerModal from '../components/PlayerModal.astro';
 import { site } from '../data/site';
 import { channels } from '../data/channels';
+import { ARTIFACT } from '../lib/env';
 
 interface Props {
   title?: string;
@@ -34,10 +35,12 @@ const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: site.name,
-  jobTitle: site.role,
+  jobTitle: site.position.title,
+  worksFor: { '@type': 'Organization', name: site.position.company },
+  address: { '@type': 'PostalAddress', addressLocality: 'Cairo', addressCountry: 'EG' },
   url: new URL('/', Astro.site).href,
   email: `mailto:${site.contact.email}`,
-  knowsAbout: ['Video editing', 'Motion graphics', 'YouTube', 'Podcast editing', 'Short-form video'],
+  knowsAbout: ['Video editing', 'Color grading', 'Motion graphics', 'Adobe Premiere Pro', 'Adobe After Effects'],
   sameAs: site.socials.map((s) => s.href).filter(Boolean),
   workExample: Object.values(channels).map((c) => ({ '@type': 'CreativeWork', name: `Videos for ${c.name}`, url: c.url })),
 };
@@ -48,7 +51,13 @@ const person = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script is:inline define:vars={{ reveal: !ARTIFACT }}>
+      const c = document.documentElement.classList;
+      c.remove('no-js');
+      c.add('js');
+      // Scroll reveals hide content until it's seen; the artifact build keeps everything visible at rest.
+      if (reveal) c.add('reveal');
+    </script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -61,7 +70,7 @@ const person = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <link rel="preload" href="/fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin />
+    {!ARTIFACT && <link rel="preload" href="/fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin />}
     {preloadImage && <link rel="preload" href={preloadImage} as="image" fetchpriority="high" />}
 
     <meta property="og:type" content="website" />

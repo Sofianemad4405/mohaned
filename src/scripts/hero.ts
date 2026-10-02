@@ -1,4 +1,4 @@
-import { $, canAutoplay, safePlay, timecode } from './env';
+import { $, canAutoplay, ensureSrc, safePlay, timecode } from './env';
 import { track } from './analytics';
 
 /** Hero loop: loads after the page is interactive, plays only while visible. */
@@ -13,11 +13,7 @@ export function initHero() {
   let userPaused = !canAutoplay;
   let visible = true;
 
-  const load = () => {
-    if (video.getAttribute('src')) return;
-    const small = matchMedia('(max-width: 768px)').matches;
-    video.src = (small ? video.dataset.srcSmall : video.dataset.srcLarge) ?? '';
-  };
+  const load = () => ensureSrc(video, matchMedia('(max-width: 768px)').matches ? video.dataset.srcSmall : video.dataset.srcLarge);
   const sync = () => {
     const paused = video.paused;
     btn.setAttribute('aria-pressed', String(paused));
@@ -25,8 +21,8 @@ export function initHero() {
   };
   const update = async () => {
     if (!userPaused && visible) {
-      load();
-      await safePlay(video);
+      await load();
+      if (!userPaused && visible) await safePlay(video);
     } else video.pause();
     sync();
   };

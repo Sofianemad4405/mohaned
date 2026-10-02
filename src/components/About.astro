@@ -2,9 +2,12 @@
 import { site } from '../data/site';
 import { channels } from '../data/channels';
 import { services } from '../data/services';
+import { brands } from '../data/brands';
 import { compact } from '../lib/format';
+import { Picture } from 'astro:assets';
+import { pic } from '../lib/env';
+import { poster } from '../lib/posters';
 import SectionHead from './SectionHead.astro';
-import Text from './Text.astro';
 ---
 
 <section class="section about" id="about" aria-labelledby="about-title">
@@ -12,11 +15,23 @@ import Text from './Text.astro';
     <SectionHead id="about" tc="00:04:10:00" kicker="About" title="The edit is <em>the show.</em>" />
 
     <div class="about__grid">
+      <figure class="about__portrait ticks" data-reveal>
+        <Picture src={poster('mohaned-portrait')} {...pic([480, 800])} sizes="(min-width: 960px) 30vw, 100vw" alt={`${site.name}`} loading="lazy" />
+        <figcaption class="label">
+          <span class="rec-dot" aria-hidden="true"></span> {site.name} <span class="dim">· {site.location}</span>
+        </figcaption>
+      </figure>
+      <div class="about__main">
       <div class="about__bio">
-        {site.bio.map((para, i) => <Text value={para} as="p" class={i === 0 ? 'about__lead' : 'about__p'} />)}
+        <p class="about__lead">{site.bio}</p>
+        <p class="about__p">{site.about}</p>
       </div>
 
       <dl class="about__facts">
+        <div>
+          <dt class="label dim">Now</dt>
+          <dd>{site.position.title} at {site.position.company}</dd>
+        </div>
         <div>
           <dt class="label dim">Cutting for</dt>
           <dd>
@@ -35,26 +50,27 @@ import Text from './Text.astro';
           </dd>
         </div>
         <div>
-          <dt class="label dim">Based in</dt>
-          <Text value={site.location} as="dd" />
+          <dt class="label dim">Tools</dt>
+          <dd>{site.tools.join(' · ')}</dd>
         </div>
         <div>
-          <dt class="label dim">Tools</dt>
-          {site.tools.length ? <dd>{site.tools.join(' · ')}</dd> : <Text value={site.toolsPlaceholder} as="dd" />}
+          <dt class="label dim">Based in</dt>
+          <dd>{site.location}</dd>
         </div>
         <div>
           <dt class="label dim">Availability</dt>
-          <Text value={site.availability} as="dd" />
+          <dd class="about__avail"><span class="about__dot" aria-hidden="true"></span>{site.availability}</dd>
         </div>
       </dl>
+      </div>
     </div>
 
     <div class="services" id="services">
-      <h3 class="label services__head"><span class="volt">What I do</span> <span class="dim">— each backed by work on this page</span></h3>
+      <h3 class="label services__head"><span class="volt">What I do</span></h3>
       <ol role="list" class="services__list">
         {
           services.map((s, i) => (
-            <li class="svc" data-reveal style={`--i:${i % 3}`}>
+            <li class="svc" data-reveal style={`--i:${i}`}>
               <span class="svc__n label">{String(i + 1).padStart(2, '0')}</span>
               <h4 class="svc__t">{s.title}</h4>
               <p class="svc__b">{s.body}</p>
@@ -75,9 +91,19 @@ import Text from './Text.astro';
     </div>
 
     <div class="brands" aria-labelledby="brands-title">
-      <h3 class="label dim" id="brands-title">Brands I’ve worked with</h3>
-      <ul role="list" class="brands__list">
-        {site.brands.map((b, i) => <li class="display" data-reveal style={`--i:${i}`}>{b}</li>)}
+      <h3 class="label dim" id="brands-title">Brands I’ve worked with <span class="volt">· {brands.length}</span></h3>
+      <ul role="list" class="brands__board">
+        {
+          brands.map((b, i) => (
+            <li class="brand" data-reveal style={`--i:${i % 7};--h:${b.h ?? 34}`}>
+              {b.logo ? (
+                <img src={b.logo.src} alt={b.name} width={b.logo.width} height={b.logo.height} loading="lazy" decoding="async" />
+              ) : (
+                <span class="brand__word">{b.name}</span>
+              )}
+            </li>
+          ))
+        }
       </ul>
     </div>
   </div>
@@ -86,27 +112,53 @@ import Text from './Text.astro';
 <style>
   .about__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: clamp(2rem, 6vw, 6rem);
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: start;
+  }
+  .about__portrait {
+    position: relative;
+    display: grid;
+    gap: var(--s-3);
+  }
+  .about__portrait :global(img) {
+    width: 100%;
+    aspect-ratio: 885 / 1051;
+    object-fit: cover;
+    background: var(--ink-3);
+  }
+  .about__portrait figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .about__main {
+    display: grid;
+    gap: var(--s-7);
   }
   .about__bio {
     display: grid;
     gap: var(--s-5);
     align-content: start;
   }
-  .about__bio :global(.about__lead) {
-    font-size: clamp(1.375rem, 2.3vw, 2rem);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    max-width: 30ch;
+  .about__lead {
+    font-family: var(--font-display);
+    font-stretch: 66%;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    text-wrap: balance;
+    max-width: 14ch;
   }
-  .about__bio :global(.about__p) {
+  .about__p {
     color: var(--muted);
     max-width: 52ch;
   }
   .about__facts {
     display: grid;
-    gap: var(--s-5);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5) var(--s-6);
     align-content: start;
     border-top: 1px solid var(--line);
     padding-top: var(--s-5);
@@ -114,10 +166,24 @@ import Text from './Text.astro';
   .about__facts > div {
     display: grid;
     gap: var(--s-2);
+    align-content: start;
   }
   .about__channels {
     display: grid;
     gap: var(--s-1);
+  }
+  .about__avail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    color: var(--volt);
+  }
+  .about__dot {
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: var(--volt);
+    box-shadow: 0 0 0 4px var(--volt-soft);
   }
 
   .services {
@@ -138,7 +204,7 @@ import Text from './Text.astro';
     padding: var(--s-6) var(--s-5) var(--s-6) 0;
     border-bottom: 1px solid var(--line);
   }
-  .svc:not(:nth-child(3n + 1)) {
+  .svc + .svc {
     padding-left: var(--s-5);
     border-left: 1px solid var(--line);
   }
@@ -162,55 +228,93 @@ import Text from './Text.astro';
     margin-top: var(--s-2);
   }
 
+  /* Sponsor board: each logo on its own panel, in the brand's own colours */
   .brands {
     margin-top: var(--section);
     display: grid;
     gap: var(--s-5);
   }
-  .brands__list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 clamp(1.5rem, 4vw, 4rem);
-    border-block: 1px solid var(--line);
-    padding-block: var(--s-6);
+  .brands__board {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
   }
-  .brands__list li {
-    font-size: clamp(2.5rem, 7vw, 6.5rem);
-    font-stretch: 62%;
-    line-height: 1;
-    color: var(--paper);
+  .brand {
+    min-width: 0; /* let the logo shrink instead of widening the grid */
+    display: grid;
+    place-items: center;
+    --tile-h: 0.75; /* height ÷ width */
+    aspect-ratio: 1 / var(--tile-h);
+    container-type: inline-size;
+    padding: var(--s-3);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--ink-2);
+    transition: background-color var(--t) var(--ease-out);
+  }
+  .brand img {
+    width: auto;
+    height: auto;
+    max-width: 72%;
+    /* --h is a share of the tile height (= --tile-h × tile width) */
+    max-height: calc(var(--h) * var(--tile-h) * 1cqw);
+    min-width: 0;
+    object-fit: contain;
+    opacity: 0.86;
+    transition:
+      opacity var(--t) var(--ease-out),
+      transform var(--t) var(--ease-out);
+  }
+  .brand__word {
+    font-family: var(--font-display);
+    font-stretch: 72%;
+    font-weight: 800;
+    font-size: clamp(1rem, 1.7vw, 1.6rem);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--muted);
     transition: color var(--t) var(--ease-out);
   }
-  .brands__list:hover li {
-    color: var(--dim);
+  .brand:hover {
+    background: var(--ink-3);
   }
-  .brands__list li:hover {
-    color: var(--volt);
+  .brand:hover img {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  .brand:hover .brand__word {
+    color: var(--paper);
   }
 
+  @media (min-width: 761px) and (max-width: 1100px) {
+    .brand {
+      --tile-h: 1;
+    }
+  }
   @media (max-width: 960px) {
     .about__grid {
       grid-template-columns: 1fr;
     }
-    .services__list {
-      grid-template-columns: 1fr 1fr;
-    }
-    .svc:not(:nth-child(3n + 1)) {
-      padding-left: 0;
-      border-left: 0;
-    }
-    .svc:nth-child(2n) {
-      padding-left: var(--s-5);
-      border-left: 1px solid var(--line);
+    .about__portrait {
+      max-width: 24rem;
     }
   }
-  @media (max-width: 600px) {
+  @media (max-width: 520px) {
+    .about__facts {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 760px) {
     .services__list {
       grid-template-columns: 1fr;
     }
-    .svc:nth-child(2n) {
+    .svc + .svc {
       padding-left: 0;
       border-left: 0;
+    }
+    .brands__board {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

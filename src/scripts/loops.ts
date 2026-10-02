@@ -31,25 +31,27 @@ export function initLoops() {
       soundBtn.setAttribute('aria-pressed', String(!video.muted));
       if (!video.paused && !raf) raf = requestAnimationFrame(draw);
     };
+    const start = async () => {
+      if (!(await ensureSrc(video))) {
+        err.hidden = false;
+        return;
+      }
+      if (!userPaused) safePlay(video);
+    };
     const update = () => {
-      if (visible && !userPaused) {
-        ensureSrc(video);
-        safePlay(video);
-      } else video.pause();
+      if (visible && !userPaused) start();
+      else video.pause();
     };
 
     video.addEventListener('play', sync);
     video.addEventListener('pause', sync);
     video.addEventListener('volumechange', sync);
-    video.addEventListener('error', () => (err.hidden = false));
 
     playBtn.addEventListener('click', () => {
       userPaused = !video.paused;
       if (!userPaused) track('video_play', { where: name });
-      if (!userPaused) {
-        ensureSrc(video);
-        safePlay(video);
-      } else video.pause();
+      if (!userPaused) start();
+      else video.pause();
     });
     soundBtn.addEventListener('click', () => {
       const unmute = video.muted;
@@ -57,12 +59,11 @@ export function initLoops() {
       video.muted = !unmute;
       if (unmute && video.paused) {
         userPaused = false;
-        ensureSrc(video);
-        safePlay(video);
+        start();
       }
     });
     fsBtn.addEventListener('click', () => {
-      ensureSrc(video);
+      start();
       const v = video as HTMLVideoElement & { webkitEnterFullscreen?: () => void };
       const frame = video.parentElement as HTMLElement;
       if (frame.requestFullscreen) frame.requestFullscreen().then(() => safePlay(video)).catch(() => v.webkitEnterFullscreen?.());

@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import { gmailCompose } from '../lib/media';
 
 const links = [
   { href: '/#work', id: 'work', label: 'Work' },
@@ -57,14 +58,14 @@ const onWork = path.startsWith('/work');
         }
       </ol>
     </nav>
-    <a class="nav__menu-mail label" href={`mailto:${site.contact.email}`} data-track="cta_email" data-track-where="menu">{site.contact.email}</a>
+    <a class="nav__menu-mail label" href={gmailCompose(site.contact.email)} target="_blank" rel="noopener" data-track="cta_email" data-track-where="menu">{site.contact.email}</a>
   </div>
 </header>
 
 <style>
   .nav {
     position: sticky;
-    top: 0;
+    top: env(safe-area-inset-top, 0px);
     z-index: var(--z-nav);
     transition:
       background-color var(--t) var(--ease-out),

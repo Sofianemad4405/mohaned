@@ -24,18 +24,6 @@ export interface Channel {
   subscribers: number;
 }
 
-/**
- * A placeholder is any string wrapped in square brackets, e.g. "[ROLE NEEDED]".
- * The <Text> component renders these with a visible "needs info" treatment,
- * and hides them entirely when `site.showPlaceholders` is false.
- */
-export type Copy = string;
-
-export interface CaseNote {
-  label: string;
-  body: Copy;
-}
-
 export interface Project {
   slug: string;
   title: string;
@@ -44,20 +32,12 @@ export interface Project {
   gloss?: string;
   channel: ChannelKey;
   format: string;
-  tags: string[];
   /** One-line summary for cards. Facts only. */
   summary: string;
   /** YouTube ids, in running order. */
   episodes: string[];
   /** Episode labels keyed by id (e.g. "S3 · Ep 8"). */
   episodeLabels?: Record<string, string>;
-  /** What is visibly on screen in the edit — observed from the footage. */
-  onScreen: string[];
-  /** Case-study notes that only the editor can supply. */
-  notes: CaseNote[];
-  role: Copy;
-  related?: { motion?: string[]; beforeAfter?: boolean };
-  accent?: string;
 }
 
 export interface MotionPiece {

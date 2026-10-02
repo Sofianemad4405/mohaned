@@ -5,6 +5,7 @@
  * the fallback (no JS, blocked embeds, offline).
  */
 import { Picture } from 'astro:assets';
+import { ARTIFACT, pic, ytOut } from '../lib/env';
 import { getVideo } from '../lib/portfolio';
 import { thumb } from '../lib/thumbs';
 import { compact, duration } from '../lib/format';
@@ -23,22 +24,19 @@ interface Props {
 }
 const { id, label, sizes = '(min-width: 1100px) 66vw, 100vw', eager = false, priority = false, group, class: className } = Astro.props;
 const v = getVideo(id);
+const Tag = ARTIFACT ? 'a' : 'button';
+const trigger = ARTIFACT ? ytOut(id, v.kind) : ({ type: 'button', 'data-yt-play': true, 'data-cursor': 'Play' } as const);
 ---
 
 <div class:list={['yt', className]} data-yt={id} data-yt-group={group}>
   <div class="yt__frame">
-    <button
-      class="yt__btn"
-      type="button"
-      data-yt-play
-      data-cursor="Play"
-    >
-      <span class="visually-hidden">Play {label ? `${label}: ` : ''}{v.title} — loads the YouTube player</span>
+    <Tag class="yt__btn" {...trigger}>
+      <span class="visually-hidden">Play {label ? `${label}: ` : ''}{v.title} — {ARTIFACT ? 'opens YouTube' : 'loads the YouTube player'}</span>
       <Picture
         src={thumb(id)}
-        widths={[480, 800, 1280]}
+        {...pic([480, 800, 1280])}
         sizes={sizes}
-        formats={['avif', 'webp']}
+       
         alt=""
         loading={eager ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
@@ -53,7 +51,7 @@ const v = getVideo(id);
         <span data-yt-duration>{duration(v.durationSec)}</span>
         <span data-yt-views>{compact(v.views)} views</span>
       </span>
-    </button>
+    </Tag>
     <div class="yt__loading" aria-hidden="true"><span></span></div>
   </div>
   <a class="yt__ext label link" href={youtube.watch(id, v.kind)} target="_blank" rel="noopener" data-yt-ext data-track="video_external" data-track-where={id}>

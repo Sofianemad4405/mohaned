@@ -1,5 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
+import { pic } from '../lib/env';
+import { youtube } from '../lib/media';
 import type { Project } from '../data/types';
 import { getVideo, projectStats } from '../lib/portfolio';
 import { thumb } from '../lib/thumbs';
@@ -18,7 +20,7 @@ const runtime =
 ---
 
 <article class="row" data-reveal aria-labelledby={`row-${p.slug}`}>
-  <a class="row__link" href={`/work/${p.slug}/`} data-cursor="View" data-track="project_open" data-track-where={p.slug}>
+  <a class="row__link" href={youtube.watch(s.top.id, s.top.kind)} target="_blank" rel="noopener" data-cursor="YouTube ↗" data-track="video_external" data-track-where={s.top.id}>
     <span class="row__idx label" aria-hidden="true">{String(index).padStart(2, '0')}</span>
 
     <div class="row__main">
@@ -27,7 +29,7 @@ const runtime =
       {p.titleAr && <p class="row__ar" lang="ar" dir="rtl">{p.titleAr}</p>}
       <p class="row__sum">{p.summary}</p>
       <p class="row__more label">
-        <span>Case study</span> <span class="arrow" aria-hidden="true">→</span>
+        <span>{s.count === 1 ? 'Watch on YouTube' : `Watch the top episode · ${compact(s.top.views)} views`}</span> <span class="arrow" aria-hidden="true">↗</span>
       </p>
     </div>
 
@@ -41,10 +43,10 @@ const runtime =
       {
         vertical ? (
           tallIds.map((id, i) => (
-            <Picture src={thumb(id, 'tall')} widths={[200, 320]} sizes="160px" formats={['avif', 'webp']} alt="" loading="lazy" style={`--k:${i}`} />
+            <Picture src={thumb(id, 'tall')} {...pic([200, 320])} sizes="160px" alt="" loading="lazy" style={`--k:${i}`} />
           ))
         ) : (
-          <Picture src={thumb(s.top.id)} widths={[480, 800]} sizes="(min-width: 900px) 30vw, 100vw" formats={['avif', 'webp']} alt="" loading="lazy" />
+          <Picture src={thumb(s.top.id)} {...pic([480, 800])} sizes="(min-width: 900px) 30vw, 100vw" alt="" loading="lazy" />
         )
       }
     </div>

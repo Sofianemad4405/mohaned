@@ -469,7 +469,7 @@ button {
    ========================================================================== */
 
 @media (prefers-reduced-motion: no-preference) {
-  .js [data-reveal] {
+  .reveal [data-reveal] {
     opacity: 0;
     transform: translate3d(0, 28px, 0);
     transition:
@@ -479,20 +479,20 @@ button {
   }
   /* Clip the child, not the observed element: IntersectionObserver and lazy
      image loading both treat a fully clipped target as invisible. */
-  .js [data-reveal='wipe'] {
+  .reveal [data-reveal='wipe'] {
     opacity: 1;
     transform: none;
   }
-  .js [data-reveal='wipe'] > * {
+  .reveal [data-reveal='wipe'] > * {
     clip-path: inset(0 100% 0 0);
     transition: clip-path 900ms var(--ease-cut);
     transition-delay: calc(var(--i, 0) * 90ms);
   }
-  .js [data-reveal].is-in {
+  .reveal [data-reveal].is-in {
     opacity: 1;
     transform: none;
   }
-  .js [data-reveal='wipe'].is-in > * {
+  .reveal [data-reveal='wipe'].is-in > * {
     clip-path: inset(-20px);
   }
 }

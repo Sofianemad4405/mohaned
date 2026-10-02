@@ -91,12 +91,10 @@ export function initBeforeAfter() {
       soundBtn.setAttribute('aria-pressed', String(!after.muted));
       if (playing && !raf) raf = requestAnimationFrame(loop);
     };
-    const load = () => {
-      ensureSrc(after);
-      ensureSrc(before);
-    };
+    const load = () => Promise.all([ensureSrc(after), ensureSrc(before)]);
     const play = async () => {
-      load();
+      await load();
+      if (userPaused || !visible) return;
       before.currentTime = after.currentTime;
       await Promise.all([safePlay(after), safePlay(before)]);
     };
@@ -118,6 +116,7 @@ export function initBeforeAfter() {
       if (userPaused) pause();
       else {
         track('video_play', { where: 'before-after' });
+        visible = true;
         play();
       }
     });

@@ -29,6 +29,7 @@ function wireForm(form: HTMLFormElement) {
   const status = $('[data-status]', form)!;
   const submitLabel = $('[data-submit-label]', form)!;
   const endpoint = form.dataset.endpoint;
+  const mode = form.dataset.mode as 'post' | 'gmail';
   const to = form.dataset.email!;
 
   const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -74,22 +75,31 @@ function wireForm(form: HTMLFormElement) {
     delete data.website;
     track('form_submit', { where: data.type || 'unspecified' });
 
-    if (!endpoint) {
-      const subject = `Project brief — ${data.type || 'New project'} (${data.name})`;
-      const body = [
-        `Name: ${data.name}`,
-        `Email: ${data.email}`,
-        data.company && `Company / channel: ${data.company}`,
-        data.type && `Project type: ${data.type}`,
-        data.budget && `Budget: ${data.budget}`,
-        data.deadline && `Deadline: ${data.deadline}`,
-        '',
-        data.message,
-      ]
-        .filter((l) => l !== undefined && l !== '')
-        .join('\n');
-      window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      say(`Your email app should open with the brief filled in. If it didn’t, write to ${to}.`);
+    const subject = `Project brief — ${data.type || 'New project'} (${data.name})`;
+    const details = [
+      `Name: ${data.name}`,
+      `Email: ${data.email}`,
+      data.company && `Company / channel: ${data.company}`,
+      data.type && `Project type: ${data.type}`,
+      data.budget && `Budget: ${data.budget}`,
+      data.deadline && `Deadline: ${data.deadline}`,
+    ].filter(Boolean);
+    const body = `${details.join('\n')}\n\n${data.message}`;
+
+    if (mode === 'gmail') {
+      // Gmail's compose screen, with To, Subject and Body already filled in.
+      const url =
+        'https://mail.google.com/mail/?view=cm&fs=1' +
+        `&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.className = 'link volt';
+      link.textContent = 'Open Gmail ↗';
+      link.click();
+      status.dataset.tone = 'ok';
+      status.replaceChildren('Gmail opens in a new tab with your brief filled in, ready to send. Not open? ', link);
       return;
     }
 
@@ -98,7 +108,7 @@ function wireForm(form: HTMLFormElement) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 15000);
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch(endpoint!, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(data),

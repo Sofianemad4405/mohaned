@@ -14,6 +14,7 @@ import { motion } from '../data/motion';
 import { mediaUrl } from '../lib/media';
 import { posterUrl } from '../lib/posters';
 import { totals } from '../lib/portfolio';
+import { ARTIFACT } from '../lib/env';
 
 const [lead, ...rest] = projects;
 // The poster is the LCP: one mid-size file, preloaded at high priority.
@@ -28,7 +29,7 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
   <section class="section work" id="work" aria-labelledby="work-title">
     <div class="wrap">
       <SectionHead id="work" tc="00:00:12:00" kicker="Selected work" title={`${totals.videos} videos. <em>Start with the biggest.</em>`}>
-        <p>Every number here is a public YouTube count. Open a case study for the full episode list.</p>
+        <p>Every number here is a public YouTube count, and every episode is one tap away.</p>
       </SectionHead>
       <Featured project={lead} index={1} />
     </div>
@@ -95,7 +96,7 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
   <section class="section shorts" aria-labelledby="shorts-title">
     <div class="wrap">
       <SectionHead id="shorts" tc="00:03:50:00" kicker="Vertical" title="Shorts that <em>travel.</em>">
-        <p>The most-watched first. Tap one to play it here.</p>
+        <p>The most-watched first. Tap one to {ARTIFACT ? 'watch it on YouTube' : 'play it here'}.</p>
       </SectionHead>
     </div>
     <ShortsRail />

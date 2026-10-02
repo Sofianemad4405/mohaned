@@ -1,4 +1,4 @@
-import { $ } from './env';
+import { $, ensureSrc, safePlay } from './env';
 import { makeIframe } from './youtube';
 import { track } from './analytics';
 
@@ -39,20 +39,19 @@ export function initModal() {
       track('video_play', { where: id });
     } else {
       const v = document.createElement('video');
-      v.src = el.dataset.modalVideo!;
       if (el.dataset.modalPoster) v.poster = el.dataset.modalPoster;
       v.controls = true;
       v.playsInline = true;
-      v.autoplay = true;
       v.setAttribute('aria-label', label);
-      v.addEventListener('error', () => {
+      stage.replaceChildren(v);
+      ensureSrc(v, el.dataset.modalVideo).then((ok) => {
+        if (ok) return safePlay(v);
         const p = document.createElement('p');
         p.className = 'label';
         p.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;color:var(--muted)';
         p.textContent = 'This video could not be loaded. Please try again later.';
         stage.replaceChildren(p);
       });
-      stage.replaceChildren(v);
       ext.hidden = true;
     }
     document.documentElement.style.overflow = 'hidden';

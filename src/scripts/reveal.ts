@@ -2,7 +2,7 @@ import { $$, prefersReducedMotion } from './env';
 
 export function initReveal() {
   const els = $$('[data-reveal]');
-  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+  if (prefersReducedMotion || !document.documentElement.classList.contains('reveal') || !('IntersectionObserver' in window)) {
     els.forEach((el) => el.classList.add('is-in'));
     return;
   }
