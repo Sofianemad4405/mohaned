@@ -11,13 +11,15 @@ interface Props {
   piece: MotionPiece;
   class?: string;
   headingLevel?: 'h3' | 'h4';
+  /** Force one frame shape (e.g. "16/9") so a grid of clips lines up; the clip is letterboxed, never cropped. */
+  ratio?: string;
 }
-const { piece: m, class: className, headingLevel: H = 'h3' } = Astro.props;
+const { piece: m, class: className, headingLevel: H = 'h3', ratio } = Astro.props;
 const poster = await posterUrl(m.poster, 1280);
 ---
 
 <figure class:list={['loop', className]} data-loop>
-  <div class="loop__frame" style={`aspect-ratio:${m.width}/${m.height}`}>
+  <div class:list={['loop__frame', ratio && 'loop__frame--fit']} style={`aspect-ratio:${ratio ?? `${m.width}/${m.height}`}`}>
     <video
       class="loop__video"
       data-loop-video
@@ -70,6 +72,9 @@ const poster = await posterUrl(m.poster, 1280);
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  .loop__frame--fit .loop__video {
+    object-fit: contain;
   }
   .loop__ui {
     position: absolute;
