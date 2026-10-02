@@ -11,6 +11,7 @@ import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
 import { projects, featured } from '../data/projects';
 import { motion } from '../data/motion';
+import { beforeAfter } from '../data/beforeAfter';
 import { mediaUrl } from '../lib/media';
 import { posterUrl } from '../lib/posters';
 import { totals } from '../lib/portfolio';
@@ -18,7 +19,7 @@ import { ARTIFACT } from '../lib/env';
 
 // The poster is the LCP: one mid-size file, preloaded at high priority.
 const heroPoster = await posterUrl('hero-poster', 960);
-const fullReelPoster = await posterUrl('ba-full-poster', 720);
+const fullReelPoster = await posterUrl(`${beforeAfter[0].key}-full-poster`, 720);
 ---
 
 <Base preloadImage={heroPoster}>
@@ -38,21 +39,21 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
     <div class="wrap ba-sec__grid">
       <div class="ba-sec__copy">
         <SectionHead id="before-after" tc="00:01:30:00" kicker="Raw → Final" title="Same take.<br/><em>Different video.</em>">
-          <p>Nine seconds from a Tornado-sponsored Fantasy Premier League Short. Drag across to see what the edit adds.</p>
+          <p>Four Tornado-sponsored Fantasy Premier League Shorts. Pick one under the player, then drag across to see what the edit adds.</p>
         </SectionHead>
         <ol role="list" class="ba-notes">
           <li data-reveal style="--i:0"><span class="label volt">01</span><div><h3>Reframe</h3><p>A punch-in turns the wide studio shot into a vertical close-up.</p></div></li>
-          <li data-reveal style="--i:1"><span class="label volt">02</span><div><h3>Captions</h3><p>Word-by-word captions that switch between Arabic and FPL’s English terms.</p></div></li>
-          <li data-reveal style="--i:2"><span class="label volt">03</span><div><h3>Graphics on the beat</h3><p>Free Hit and Triple Captain chip cards land as the words are said.</p></div></li>
-          <li data-reveal style="--i:3"><span class="label volt">04</span><div><h3>Mood</h3><p>A rain overlay rolls in as the talk turns to chips that failed.</p></div></li>
-          <li data-reveal style="--i:4"><span class="label volt">05</span><div><h3>Brand</h3><p>Tornado and Premier League marks locked in frame without covering the host.</p></div></li>
+          <li data-reveal style="--i:1"><span class="label volt">02</span><div><h3>Captions</h3><p>Word-by-word Arabic captions, with FPL’s English terms kept in.</p></div></li>
+          <li data-reveal style="--i:2"><span class="label volt">03</span><div><h3>Graphics on the beat</h3><p>Chip cards, the league code, the team sheet and the prize bundle land as the words are said.</p></div></li>
+          <li data-reveal style="--i:3"><span class="label volt">04</span><div><h3>Brand</h3><p>Tornado and Premier League marks locked in frame without covering the host.</p></div></li>
         </ol>
         <button
           type="button"
           class="btn ba-sec__full"
-          data-modal-video={mediaUrl('before-after/ba-full.mp4')}
+          data-modal-video={mediaUrl(`before-after/${beforeAfter[0].key}-full.mp4`)}
           data-modal-poster={fullReelPoster}
           data-modal-orient="tall"
+          data-ba-full
           data-modal-label="Original before / after reel"
           data-track="video_play"
           data-track-where="before-after-full"
@@ -83,7 +84,7 @@ const fullReelPoster = await posterUrl('ba-full-poster', 720);
   <section class="section motion" id="motion" aria-labelledby="motion-title">
     <div class="wrap">
       <SectionHead id="motion" tc="00:03:20:00" kicker="Motion graphics" title="Motion that<br/><em>carries the show.</em>">
-        <p>A segment sting, a kit reveal and a scoreboard package. They play muted while they’re on screen — turn the sound on for the hits.</p>
+        <p>{motion.length} pieces: show intros, transitions, name supers, score bugs and FPL graphics. They play muted while they’re on screen — turn the sound on for the hits.</p>
       </SectionHead>
       <div class="motion__grid">
         {motion.map((m) => <VideoLoop piece={m} ratio="16/9" />)}

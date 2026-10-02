@@ -68,6 +68,16 @@ async function load(video: HTMLVideoElement, src: string) {
   return tryUrl(video, src);
 }
 
+/** Point a deferred video at a new source (and poster); the next ensureSrc loads it. */
+export function swapSrc(video: HTMLVideoElement, src: string, poster?: string) {
+  video.pause();
+  loading.delete(video);
+  video.dataset.src = src;
+  if (poster) video.poster = poster;
+  video.removeAttribute('src');
+  video.load();
+}
+
 /** Load a deferred video source once; resolves true when it can play. */
 export function ensureSrc(video: HTMLVideoElement, src = video.dataset.src) {
   if (!src) return Promise.resolve(false);

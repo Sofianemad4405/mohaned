@@ -1,4 +1,4 @@
-import { $, $$, canAutoplay, clamp, ensureSrc, safePlay, timecode } from './env';
+import { $, $$, canAutoplay, clamp, ensureSrc, safePlay, swapSrc, timecode } from './env';
 import { track } from './analytics';
 
 const describe = (p: number) =>
@@ -127,6 +127,27 @@ export function initBeforeAfter() {
         play();
       }
     });
+
+    // --- Clip switcher ----------------------------------------------------
+    const clipBtns = $$<HTMLButtonElement>('[data-ba-clip]', root);
+    const fullBtn = document.querySelector<HTMLElement>('[data-ba-full]');
+    clipBtns.forEach((b) =>
+      b.addEventListener('click', () => {
+        if (b.getAttribute('aria-pressed') === 'true') return;
+        clipBtns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+        const d = b.dataset;
+        swapSrc(after, d.after!, d.afterPoster);
+        swapSrc(before, d.before!, d.beforePoster);
+        if (tc) tc.textContent = timecode(0);
+        if (fullBtn) {
+          fullBtn.dataset.modalVideo = d.full;
+          fullBtn.dataset.modalPoster = d.fullPoster;
+        }
+        track('before_after_clip', { clip: d.baClip ?? '' });
+        if (!userPaused && visible) play();
+        else sync();
+      }),
+    );
 
     // Fetch a little early, play only when mostly on screen.
     const pre = new IntersectionObserver(

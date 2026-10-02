@@ -1,15 +1,27 @@
 ---
 /**
  * RAW → FINAL comparison. Both panels are cut from the same comparison reel
- * in the Drive ("before after/1.mp4") so they are frame-locked; the script
+ * in the Drive ("before after/*.mp4") so they are frame-locked; the script
  * keeps them in sync. The raw panel comes from the reel's small inset, so it
- * is softer than the camera original — noted on screen.
+ * is softer than the camera original — noted on screen. With more than one
+ * reel, a switcher under the controls swaps the pair in place.
  */
 import { mediaUrl } from '../lib/media';
 import { posterUrl } from '../lib/posters';
+import { beforeAfter } from '../data/beforeAfter';
 
-const afterPoster = await posterUrl('ba-after-poster', 576);
-const beforePoster = await posterUrl('ba-before-poster', 576);
+const clips = await Promise.all(
+  beforeAfter.map(async (c) => ({
+    ...c,
+    after: mediaUrl(`before-after/${c.key}-after.mp4`),
+    before: mediaUrl(`before-after/${c.key}-before.mp4`),
+    full: mediaUrl(`before-after/${c.key}-full.mp4`),
+    afterPoster: await posterUrl(`${c.key}-after-poster`, 576),
+    beforePoster: await posterUrl(`${c.key}-before-poster`, 576),
+    fullPoster: await posterUrl(`${c.key}-full-poster`, 720),
+  })),
+);
+const [first] = clips;
 ---
 
 <div class="ba" data-ba style="--pos: 50%">
@@ -17,8 +29,8 @@ const beforePoster = await posterUrl('ba-before-poster', 576);
     <video
       class="ba__vid"
       data-ba-after
-      data-src={mediaUrl('before-after/ba-after.mp4')}
-      poster={afterPoster}
+      data-src={first.after}
+      poster={first.afterPoster}
       width="576"
       height="676"
       muted
@@ -30,8 +42,8 @@ const beforePoster = await posterUrl('ba-before-poster', 576);
     <video
       class="ba__vid ba__vid--before"
       data-ba-before
-      data-src={mediaUrl('before-after/ba-before.mp4')}
-      poster={beforePoster}
+      data-src={first.before}
+      poster={first.beforePoster}
       width="576"
       height="676"
       muted
@@ -80,6 +92,28 @@ const beforePoster = await posterUrl('ba-before-poster', 576);
       </button>
     </div>
   </div>
+  {
+    clips.length > 1 && (
+      <div class="ba__clips" role="group" aria-label="Choose a comparison">
+        {clips.map((c, i) => (
+          <button
+            type="button"
+            class="ba__clip label"
+            data-ba-clip={c.key}
+            data-after={c.after}
+            data-before={c.before}
+            data-after-poster={c.afterPoster}
+            data-before-poster={c.beforePoster}
+            data-full={c.full}
+            data-full-poster={c.fullPoster}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+          >
+            <span class="ba__clip-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span> {c.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
   <p class="ba__note label dim">Drag, tap, or use arrow keys. Raw panel is taken from the reel’s inset, so it’s lower resolution than the camera original.</p>
 </div>
 
@@ -244,6 +278,37 @@ const beforePoster = await posterUrl('ba-before-poster', 576);
   .ba__icon[aria-pressed='true'] .i-pause,
   .ba__icon[aria-pressed='true'] .i-sound {
     display: block;
+  }
+  .ba__clips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-2);
+  }
+  .ba__clip {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    min-height: 44px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+    text-align: left;
+    transition:
+      background-color var(--t-fast),
+      color var(--t-fast),
+      border-color var(--t-fast);
+  }
+  .ba__clip:hover {
+    color: var(--paper);
+    border-color: var(--paper);
+  }
+  .ba__clip[aria-pressed='true'] {
+    background: var(--volt);
+    border-color: var(--volt);
+    color: var(--volt-ink);
+  }
+  .ba__clip-n {
+    opacity: 0.6;
   }
   .ba__note {
     text-transform: none;
