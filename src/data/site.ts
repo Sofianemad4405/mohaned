@@ -25,11 +25,22 @@ export const site = {
     email: "mohandg699@gmail.com",
   },
 
-  // Only Instagram, per Mohanad. Paste the profile URL here to show it everywhere.
-  socials: [{ label: "Instagram", href: "" }] as {
+  // Only Instagram, per Mohanad.
+  socials: [{ label: "Instagram", href: "https://www.instagram.com/mohandgamal23/" }] as {
     label: string;
     href: string;
   }[],
+
+  // Footer signature for the person who built the site.
+  credit: {
+    name: "Sofian Emad",
+    role: "Mobile developer",
+    links: [
+      { kind: "whatsapp", label: "WhatsApp", href: "https://wa.me/201002792637?text=" + encodeURIComponent("Hi Sofian, I saw Mohanad Gamal’s portfolio and want to talk about a project.") },
+      { kind: "x", label: "X (Twitter)", href: "https://x.com/Bojjaan_Krikc" },
+      { kind: "instagram", label: "Instagram", href: "https://www.instagram.com/sofian_44/" },
+    ],
+  },
 
   showreel: {
     // Leave empty until a showreel exists; the hero shows a motion-work loop meanwhile.

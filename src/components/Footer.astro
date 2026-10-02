@@ -1,10 +1,16 @@
 ---
 import { site } from '../data/site';
 import { gmailCompose } from '../lib/media';
-import { longDate } from '../lib/format';
-import { STATS_SNAPSHOT_DATE } from '../data/videos';
 
 const year = new Date().getFullYear();
+const { credit } = site;
+const icons: Record<string, string> = {
+  whatsapp:
+    'M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.5-.3z',
+  x: 'M17.8 3h3l-6.6 7.6L22 21h-6.1l-4.8-6.3L5.6 21h-3l7.1-8.1L2.2 3h6.2l4.3 5.7L17.8 3zm-1 16.2h1.7L7.3 4.7H5.5l11.3 14.5z',
+  instagram:
+    'M12 7a5 5 0 100 10 5 5 0 000-10zm0 8.2a3.2 3.2 0 110-6.4 3.2 3.2 0 010 6.4zM17.2 5.6a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM12 3.8c2.7 0 3 0 4 .1 2.7.1 4 1.4 4.1 4.1.1 1 .1 1.3.1 4s0 3-.1 4c-.1 2.7-1.4 4-4.1 4.1-1 .1-1.3.1-4 .1s-3 0-4-.1c-2.7-.1-4-1.4-4.1-4.1-.1-1-.1-1.3-.1-4s0-3 .1-4C4 5.3 5.3 4 8 3.9c1-.1 1.3-.1 4-.1zM12 2c-2.7 0-3.1 0-4.1.1C4.2 2.3 2.3 4.2 2.1 7.9 2 8.9 2 9.3 2 12s0 3.1.1 4.1c.2 3.7 2.1 5.6 5.8 5.8 1 .1 1.4.1 4.1.1s3.1 0 4.1-.1c3.7-.2 5.6-2.1 5.8-5.8.1-1 .1-1.4.1-4.1s0-3.1-.1-4.1c-.2-3.7-2.1-5.6-5.8-5.8C15.1 2 14.7 2 12 2z',
+};
 ---
 
 <footer class="foot">
@@ -47,7 +53,24 @@ const year = new Date().getFullYear();
 
   <div class="wrap foot__base label dim">
     <p>© {year} {site.name}</p>
-    <p>View counts: public YouTube data, {longDate(STATS_SNAPSHOT_DATE)}. Videos belong to their channels.</p>
+    <div class="credit">
+      <p class="credit__by">
+        <span>Designed &amp; built by</span>
+        <a class="credit__name" href={credit.links[0].href} target="_blank" rel="noopener" data-track="credit" data-track-where="name">{credit.name}</a>
+        <span class="credit__role">{credit.role}</span>
+      </p>
+      <ul role="list" class="credit__links">
+        {
+          credit.links.map((l) => (
+            <li>
+              <a class="credit__icon" href={l.href} target="_blank" rel="noopener" aria-label={`${credit.name} on ${l.label}`} data-track="credit" data-track-where={l.kind}>
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d={icons[l.kind]} fill="currentColor" /></svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
     <a class="link" href="#main">Back to top ↑</a>
   </div>
 </footer>
@@ -93,6 +116,64 @@ const year = new Date().getFullYear();
     margin-top: var(--s-8);
     padding-top: var(--s-5);
     border-top: 1px solid var(--line);
+  }
+  .foot__base {
+    align-items: center;
+  }
+  .credit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .credit__by {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25em 0.6em;
+  }
+  .credit__name {
+    color: var(--paper);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: linear-gradient(var(--volt), var(--volt)) 0 100% / 0 1px no-repeat;
+    transition:
+      background-size var(--t) var(--ease-out),
+      color var(--t-fast);
+  }
+  .credit__name:hover {
+    color: var(--volt);
+    background-size: 100% 1px;
+  }
+  .credit__role {
+    padding: 0.2em 0.55em;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-pill);
+    color: var(--muted);
+  }
+  .credit__links {
+    display: flex;
+    gap: var(--s-2);
+  }
+  .credit__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    color: var(--muted);
+    transition:
+      background-color var(--t-fast),
+      color var(--t-fast),
+      border-color var(--t-fast),
+      transform var(--t-fast) var(--ease-out);
+  }
+  .credit__icon:hover {
+    background: var(--volt);
+    border-color: var(--volt);
+    color: var(--volt-ink);
+    transform: translateY(-2px);
   }
   @media (max-width: 760px) {
     .foot__grid {
