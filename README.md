@@ -64,7 +64,7 @@ When separate raw and final files arrive, encode each to the same size and repla
 - Video only autoplays muted, only while on screen, and never with `prefers-reduced-motion` or Save-Data. Every autoplaying video has a pause control.
 - The hero loop starts after the page has loaded, so the poster stays the LCP. Phones get the 480p file.
 - Analytics: `src/scripts/analytics.ts` forwards `data-track` events to Plausible, `gtag` or `dataLayer` if one is installed. Otherwise it does nothing.
-- Contact form: posts JSON to `PUBLIC_FORM_ENDPOINT` if set. Otherwise it opens Gmail's compose screen with To, Subject and Body already filled in. Email links also open Gmail compose. It has a honeypot field for spam.
+- Contact form: sends the brief straight to `site.contact.email` through FormSubmit (`formsubmit.co/ajax/<email>`), no key needed. The first brief ever sent triggers a one-time "Activate Form" email to that inbox; until it's clicked, visitors get one-tap fallbacks (Gmail compose or their mail app, pre-filled). Set `PUBLIC_FORM_ENDPOINT` to use Formspree/Web3Forms instead. The artifact build opens Gmail/mail app directly. Honeypot field for spam.
 
 ## Preview on claude.ai (artifact build)
 

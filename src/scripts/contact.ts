@@ -86,20 +86,31 @@ function wireForm(form: HTMLFormElement) {
     ].filter(Boolean);
     const body = `${details.join('\n')}\n\n${data.message}`;
 
+    const gmailUrl =
+      'https://mail.google.com/mail/?view=cm&fs=1' +
+      `&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoUrl = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const linkTo = (href: string, text: string, blank = true) => {
+      const a = document.createElement('a');
+      a.href = href;
+      if (blank) {
+        a.target = '_blank';
+        a.rel = 'noopener';
+      }
+      a.className = 'link volt';
+      a.textContent = text;
+      return a;
+    };
+    // Hand the brief to the visitor's own mail: Gmail on desktop, the mail app on phones.
+    const handOff = (lead: string, tone: 'ok' | 'error') => {
+      status.dataset.tone = tone;
+      status.replaceChildren(lead, linkTo(gmailUrl, 'Send with Gmail ↗'), ' · ', linkTo(mailtoUrl, 'Use your mail app', false));
+    };
+
     if (mode === 'gmail') {
-      // Gmail's compose screen, with To, Subject and Body already filled in.
-      const url =
-        'https://mail.google.com/mail/?view=cm&fs=1' +
-        `&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.className = 'link volt';
-      link.textContent = 'Open Gmail ↗';
-      link.click();
-      status.dataset.tone = 'ok';
-      status.replaceChildren('Gmail opens in a new tab with your brief filled in, ready to send. Not open? ', link);
+      const phone = matchMedia('(pointer: coarse)').matches;
+      linkTo(phone ? mailtoUrl : gmailUrl, '', !phone).click();
+      handOff('Your brief is filled in, ready to send. Didn’t open? ', 'ok');
       return;
     }
 
@@ -111,14 +122,26 @@ function wireForm(form: HTMLFormElement) {
       const res = await fetch(endpoint!, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          // Skip blank optional fields so the email only lists what was filled in.
+          ...Object.fromEntries(Object.entries(data).filter(([, v]) => v.trim())),
+          // FormSubmit options; other services ignore them.
+          _subject: subject,
+          _replyto: data.email,
+          _template: 'table',
+          _captcha: 'false',
+        }),
         signal: ctrl.signal,
       });
-      if (!res.ok) throw new Error(String(res.status));
+      const json = await res.json().catch(() => ({}));
+      // FormSubmit answers 200 with success "false" when something is off (e.g. not activated yet).
+      if (!res.ok || String(json.success ?? 'true') === 'false') throw new Error(json.message || String(res.status));
       form.reset();
+      track('form_sent', { where: data.type || 'unspecified' });
       say(`Thanks, ${data.name.split(' ')[0]} — your brief is in. I’ll reply to ${data.email}.`);
     } catch {
-      say(`That didn’t send — nothing was lost. Try again, or email ${to} directly.`, 'error');
+      track('form_failed');
+      handOff('That didn’t go through, but nothing was lost. Send the same brief yourself: ', 'error');
     } finally {
       clearTimeout(timer);
       form.classList.remove('is-sending');

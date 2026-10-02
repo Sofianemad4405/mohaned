@@ -1,8 +1,12 @@
 ---
 import { site } from '../data/site';
 import { gmailCompose } from '../lib/media';
+import { ARTIFACT } from '../lib/env';
 
-const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
+// Briefs are delivered by FormSubmit (no account or key; the inbox owner clicks a
+// one-time "Activate" email). PUBLIC_FORM_ENDPOINT swaps in Formspree/Web3Forms.
+// The artifact viewer can't reach other sites, so there it falls back to Gmail.
+const endpoint = ARTIFACT ? '' : (import.meta.env.PUBLIC_FORM_ENDPOINT || `https://formsubmit.co/ajax/${site.contact.email}`);
 const projectTypes = ['Long-form show', 'Podcast', 'Shorts / Reels', 'Interview', 'Color grading', 'Motion graphics', 'Something else'];
 const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5,000', '$5,000+'];
 ---
@@ -101,7 +105,7 @@ const budgets = ['Not sure yet', 'Under $500', '$500 – $1,500', '$1,500 – $5
           <span data-submit-label>Send brief</span> <span class="arrow" aria-hidden="true">→</span>
         </button>
         <p class="form__hint label dim">
-          {endpoint ? 'Goes straight to my inbox.' : 'Opens Gmail with everything filled in. Just press Send.'}
+          {endpoint ? 'Goes straight to my inbox. I reply within a day.' : 'Opens Gmail with everything filled in. Just press Send.'}
         </p>
       </div>
       <p class="form__status" role="status" aria-live="polite" data-status></p>
